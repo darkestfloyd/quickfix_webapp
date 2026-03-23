@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Confirm Quote | QuickFix Windshields</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#565e74",
+              "surface-variant": "#e0e3e5",
+              "on-secondary-fixed-variant": "#3a485c",
+              "secondary-container": "#d5e3fd",
+              "on-secondary-container": "#57657b",
+              "tertiary-fixed-dim": "#8bd6b6",
+              "on-secondary-fixed": "#0d1c2f",
+              "outline": "#76777d",
+              "primary-fixed": "#dae2fd",
+              "on-surface-variant": "#45464d",
+              "primary": "#000000",
+              "on-background": "#191c1e",
+              "inverse-primary": "#bec6e0",
+              "outline-variant": "#c6c6cd",
+              "on-error-container": "#93000a",
+              "primary-fixed-dim": "#bec6e0",
+              "surface-dim": "#d8dadc",
+              "on-primary-container": "#7c839b",
+              "surface-container": "#eceef0",
+              "primary-container": "#131b2e",
+              "on-secondary": "#ffffff",
+              "tertiary": "#000000",
+              "on-tertiary-container": "#479175",
+              "on-tertiary-fixed": "#002116",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed": "#a6f2d1",
+              "on-tertiary-fixed-variant": "#00513b",
+              "secondary": "#515f74",
+              "on-primary-fixed": "#131b2e",
+              "surface-container-low": "#f2f4f6",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-container": "#002116",
+              "surface": "#f7f9fb",
+              "secondary-fixed-dim": "#b9c7e0",
+              "inverse-surface": "#2d3133",
+              "error-container": "#ffdad6",
+              "inverse-on-surface": "#eff1f3",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#e0e3e5",
+              "surface-container-high": "#e6e8ea",
+              "on-error": "#ffffff",
+              "surface-bright": "#f7f9fb",
+              "on-surface": "#191c1e",
+              "background": "#f7f9fb",
+              "error": "#ba1a1a",
+              "secondary-fixed": "#d5e3fd",
+              "on-primary-fixed-variant": "#3f465c"
+            },
+            fontFamily: {
+              "headline": ["Newsreader"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md">
+<div class="flex justify-between items-center px-6 md:px-8 py-4 md:py-6 max-w-7xl mx-auto">
+<div class="text-xl md:text-2xl font-headline italic text-slate-950 tracking-tight">QuickFix Windshields</div>
+<a class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors duration-400 group" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span class="font-label uppercase tracking-widest text-[10px] md:text-xs font-medium">Back</span>
+</a>
+</div>
+</nav>
+<main class="pt-24 md:pt-32 pb-16 md:pb-24 px-6 md:px-8 max-w-7xl mx-auto min-h-screen">
+<!-- Progress Stepper -->
+<div class="mb-12 md:mb-16 max-w-3xl mx-auto">
+<div class="flex justify-between mb-4">
+<span class="font-label text-[10px] md:text-xs uppercase tracking-tighter text-on-primary-container font-bold">Step 03 — Final Confirmation</span>
+<span class="font-label text-[10px] md:text-xs uppercase tracking-tighter text-on-surface-variant font-medium">90% Complete</span>
+</div>
+<div class="h-1.5 md:h-2 w-full bg-surface-container rounded-full overflow-hidden flex">
+<div class="h-full bg-tertiary-fixed-variant w-1/3 border-r border-surface"></div>
+<div class="h-full bg-tertiary-fixed-variant w-1/3 border-r border-surface"></div>
+<div class="h-full bg-primary w-1/3"></div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+<!-- Left Column: Form Details -->
+<div class="lg:col-span-7 space-y-10 md:space-y-12">
+<header>
+<h1 class="font-headline text-4xl md:text-5xl lg:text-6xl text-primary leading-tight mb-4 md:mb-6">Secure Your <br/><span class="italic">Expert Service</span></h1>
+<p class="text-on-surface-variant text-base md:text-lg max-w-xl font-light leading-relaxed">Please provide your contact details. A specialist will reach out within 15 minutes to finalize your quote and scheduling.</p>
+</header>
+<form action="summary.html" class="space-y-8 md:space-y-10">
+<div class="grid grid-cols-1 gap-8 md:gap-10">
+<div class="relative">
+<label class="block font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2">Full Name</label>
+<input class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary px-0 py-3 text-lg transition-all duration-400 placeholder:text-surface-dim" placeholder="Arjun Malhotra" required="" type="text"/>
+</div>
+<div class="relative">
+<label class="block font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2">Email Address</label>
+<input class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary px-0 py-3 text-lg transition-all duration-400 placeholder:text-surface-dim" placeholder="arjun.m@corporate.in" required="" type="email"/>
+</div>
+<div class="relative">
+<label class="block font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant mb-2">Mobile Number</label>
+<div class="flex items-center">
+<span class="text-lg font-medium pr-4 text-on-surface-variant">+91</span>
+<input class="w-full bg-transparent border-t-0 border-x-0 border-b border-outline-variant/30 focus:ring-0 focus:border-primary px-0 py-3 text-lg transition-all duration-400 placeholder:text-surface-dim" placeholder="98765 43210" required="" type="tel"/>
+</div>
+</div>
+</div>
+<div class="pt-6 md:pt-8">
+<button class="w-full md:w-auto bg-primary text-on-primary px-10 md:px-12 py-4 md:py-5 font-label uppercase tracking-widest text-sm font-bold shadow-2xl shadow-primary/10 hover:bg-primary-container transition-all duration-400 flex items-center justify-center gap-4 group" type="submit">
+                            View Final Summary &amp; Quote
+                            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<p class="mt-6 text-[11px] text-on-surface-variant/60 max-w-md leading-relaxed">
+                            By clicking, you agree to our Terms of Service. Our technician will verify the glass type upon arrival at your doorstep.
+                        </p>
+</div>
+</form>
+</div>
+<!-- Right Column: Summary Card -->
+<div class="lg:col-span-5 lg:sticky lg:top-32 order-first lg:order-last">
+<div class="bg-surface-container-low p-6 md:p-10 relative overflow-hidden">
+<!-- Subtle Decorative Background -->
+<div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-tertiary-fixed/10 rounded-full blur-3xl"></div>
+<h3 class="font-headline text-2xl mb-6 md:mb-8 border-b border-outline-variant/20 pb-4 italic">Booking Summary</h3>
+<div class="space-y-6 md:space-y-8 relative z-10">
+<div class="flex gap-4 md:gap-6 items-start">
+<div class="w-20 h-20 md:w-24 md:h-24 bg-surface-container-lowest flex-shrink-0 overflow-hidden">
+<img alt="Luxury Car Detail" class="w-full h-full object-cover" data-alt="Close up of a luxury car front grille and windshield" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTkrS2BhglMKkCNqh3vbLoPb9MA84jQ5RWUiMmK0Boxl0eu0nTv6Uq3sR6TZXn6Skf4GxcCPsY9Zca-fHW4xjWvdUZTx0PsKdQA2zakcyJT6JNcPc7zgmRe0XbXQx6UtaL2c7aWcvVup1Mep1Pkk4k-mtBg3YmVLkD3t-AZUY9Yn4mxw3v8u0l9ftr2j2y8XUXbvyYp5NOR_ZXaaB_BVMayvIHplfBgw3Mv6BiSIb_tKtUmsMU0zNxQK5lPWt6EaoQctnbkXoPaxEh"/>
+</div>
+<div>
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Vehicle</p>
+<p class="text-lg md:text-xl font-medium">BMW 5 Series (2023)</p>
+<p class="text-xs md:text-sm text-on-surface-variant">Acoustic Glass - Front Windshield</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 md:gap-8 py-6 md:py-8 border-y border-outline-variant/20">
+<div>
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Service Date</p>
+<p class="text-base md:text-lg font-medium">Oct 24, 2024</p>
+</div>
+<div>
+<p class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">Preferred Slot</p>
+<p class="text-base md:text-lg font-medium">09:00 - 11:00 AM</p>
+</div>
+</div>
+<div class="space-y-3 md:space-y-4 pt-2">
+<div class="flex justify-between items-center text-sm md:text-base">
+<span class="text-on-surface-variant">Service Location</span>
+<span class="text-right font-medium">Bandra West, Mumbai</span>
+</div>
+<div class="flex justify-between items-center text-sm md:text-base">
+<span class="text-on-surface-variant">Doorstep Fee</span>
+<span class="text-tertiary-fixed-variant font-bold uppercase text-xs tracking-widest">Complimentary</span>
+</div>
+</div>
+<div class="pt-4 md:pt-8 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 md:w-10 md:h-10 bg-tertiary-fixed flex items-center justify-center rounded-full">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-base md:text-lg" data-weight="fill">verified_user</span>
+</div>
+<span class="text-[10px] md:text-xs font-label uppercase tracking-tight font-bold">1-Year Warranty Included</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Trust Badges -->
+<div class="mt-6 md:mt-8 grid grid-cols-3 gap-3 md:gap-4 opacity-60">
+<div class="text-center p-3 md:p-4 border border-outline-variant/20">
+<span class="material-symbols-outlined block mb-1 md:mb-2 text-lg md:text-xl">security</span>
+<span class="text-[8px] md:text-[9px] uppercase tracking-tighter block leading-none">AIS Certified</span>
+</div>
+<div class="text-center p-3 md:p-4 border border-outline-variant/20">
+<span class="material-symbols-outlined block mb-1 md:mb-2 text-lg md:text-xl">contactless</span>
+<span class="text-[8px] md:text-[9px] uppercase tracking-tighter block leading-none">Paperless</span>
+</div>
+<div class="text-center p-3 md:p-4 border border-outline-variant/20">
+<span class="material-symbols-outlined block mb-1 md:mb-2 text-lg md:text-xl">support_agent</span>
+<span class="text-[8px] md:text-[9px] uppercase tracking-tighter block leading-none">24/7 Support</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Content -->
+<footer class="bg-slate-50 dark:bg-slate-950">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-8 py-12 md:py-16 max-w-7xl mx-auto border-t-0">
+<div class="col-span-2 md:col-span-1">
+<div class="text-xl font-serif text-slate-900 dark:text-white mb-6">QuickFix Windshields</div>
+<p class="text-xs font-sans tracking-wide uppercase font-medium text-slate-500 dark:text-slate-400 leading-relaxed">
+                    © 2024 QuickFix Windshields.<br/>Premium Doorstep Service.
+                </p>
+</div>
+<div class="space-y-3">
+<h4 class="text-[10px] font-label uppercase tracking-widest text-primary mb-4">Cities</h4>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Mumbai</a>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Delhi</a>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Bengaluru</a>
+</div>
+<div class="space-y-3">
+<h4 class="text-[10px] font-label uppercase tracking-widest text-primary mb-4">Support</h4>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Process</a>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Safety</a>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Insurance</a>
+</div>
+<div class="space-y-3">
+<h4 class="text-[10px] font-label uppercase tracking-widest text-primary mb-4">Legal</h4>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">About Us</a>
+<a class="block text-slate-500 hover:text-slate-900 dark:hover:text-white underline-offset-4 underline font-sans text-xs md:text-sm tracking-wide uppercase font-medium transition-all" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

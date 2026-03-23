@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#565e74",
+              "surface-variant": "#e0e3e5",
+              "on-secondary-fixed-variant": "#3a485c",
+              "secondary-container": "#d5e3fd",
+              "on-secondary-container": "#57657b",
+              "tertiary-fixed-dim": "#8bd6b6",
+              "on-secondary-fixed": "#0d1c2f",
+              "outline": "#76777d",
+              "primary-fixed": "#dae2fd",
+              "on-surface-variant": "#45464d",
+              "primary": "#000000",
+              "on-background": "#191c1e",
+              "inverse-primary": "#bec6e0",
+              "outline-variant": "#c6c6cd",
+              "on-error-container": "#93000a",
+              "primary-fixed-dim": "#bec6e0",
+              "surface-dim": "#d8dadc",
+              "on-primary-container": "#7c839b",
+              "surface-container": "#eceef0",
+              "primary-container": "#131b2e",
+              "on-secondary": "#ffffff",
+              "on-tertiary-container": "#479175",
+              "on-tertiary-fixed": "#002116",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed": "#a6f2d1",
+              "on-tertiary-fixed-variant": "#00513b",
+              "secondary": "#515f74",
+              "on-primary-fixed": "#131b2e",
+              "surface-container-low": "#f2f4f6",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-container": "#002116",
+              "surface": "#f7f9fb",
+              "secondary-fixed-dim": "#b9c7e0",
+              "inverse-surface": "#2d3133",
+              "error-container": "#ffdad6",
+              "inverse-on-surface": "#eff1f3",
+              "on-primary": "#ffffff",
+              "surface-container-highest": "#e0e3e5",
+              "surface-container-high": "#e6e8ea",
+              "on-error": "#ffffff",
+              "surface-bright": "#f7f9fb",
+              "on-surface": "#191c1e",
+              "background": "#f7f9fb",
+              "error": "#ba1a1a",
+              "secondary-fixed": "#d5e3fd",
+              "on-primary-fixed-variant": "#3f465c"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-tertiary-fixed">
+<header class="w-full bg-white/80 backdrop-blur-md sticky top-0 z-50">
+<div class="px-6 py-4 flex justify-center items-center">
+<div class="text-xl font-extrabold tracking-tighter text-primary">WindshieldConcierge</div>
+</div>
+</header>
+<main class="pt-4 pb-20 px-4 max-w-lg mx-auto">
+<div class="flex justify-center gap-2 mb-8">
+<div class="h-1 w-8 rounded-full bg-primary"></div>
+<div class="h-1 w-8 rounded-full bg-surface-dim"></div>
+<div class="h-1 w-8 rounded-full bg-surface-dim"></div>
+</div>
+<div class="mb-8">
+<h1 class="text-3xl font-extrabold text-on-surface tracking-tight mb-2">
+            Identify your vehicle
+        </h1>
+<p class="text-sm text-on-surface-variant font-medium">
+            OEM-grade glass matched to your VIN for a perfect fit.
+        </p>
+</div>
+<section class="space-y-10">
+<div>
+<h3 class="text-[10px] uppercase tracking-widest mb-4 text-on-surface-variant font-black">Vehicle Make</h3>
+<div class="grid grid-cols-3 gap-3">
+<button class="flex flex-col items-center justify-center p-4 bg-white border-2 border-primary rounded-xl transition-all shadow-sm">
+<img alt="" class="w-8 h-8 mb-2 grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmcOAq2oQ82npBjtP5WyZAFX5cov2ezA49c43L6lqbPZapxL4JrOBRYthOmiswMVF9mUXwzq0nLQuStChWK99EefPqH38VqOCbPIMXeFd6u2G_skrIQJw-DSUSFY5-329-zLZdU5xgdLO1NE-4tDSzsAff3qOO4xt6PxcQXetv_uXtRtmo17mIkLjy3DbcoiyKLOlltN5IQYOsTmZshlHgxn1YdHAic3uIGncRRa7ZOxn2I8w8ij_F0yvok7Va-LfDVSyF_0kMvUv-"/>
+<span class="text-[10px] font-bold">Mercedes</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-white border border-outline-variant/30 rounded-xl transition-all">
+<img alt="" class="w-8 h-8 mb-2 grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDesJ64Zex12ctjbZJZTr7KL-UQ_Qy11_r__DK3b7wyEWtARw_yLFoUKxXUsoH0obVBTCUvzYjElIeSv8tonKHUQR6tqdnga35YZ-604C8m3oPPw-6CLI0R0s9omGpVpRjpi5LNT8tDL83MUaV3nZ1D9NoJgx0QuelmAY27Ap2M7pMrXfOWBVpz4_30GejtaLgU4IF3INb6Cpjj7MehhgpffKVYS_mJyGkdnsjXScNc-3BiuHbns0leAvopXDw189hhZsM0B5NDrEc9"/>
+<span class="text-[10px] font-bold text-on-surface-variant">BMW</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-white border border-outline-variant/30 rounded-xl transition-all">
+<img alt="" class="w-8 h-8 mb-2 grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvI9LftYbN2rfE4s4H_kvHUy_s7YDx7UT9SaC-YjxWDTA8ZqbTiJnezUwXFk9dIexSh3W6Vqfj17lHwDF58Fg3rJ4wtYzktQ2D35UlJ2QVeCxD3kPIaWSw5Q9Rk5m8AG3DVEss1Ty5uK-VHXG7eCIrH9mx5xQdjdGOrvzPYstkfUel3vHGg667aku6smnPQnHasAV6vSbHpYi4hzUSNzsNbZDRDpZQGC6fN2N184dNUsAavOgqN-lOrcBTsXsXndLpO8uRq9lqW-Di"/>
+<span class="text-[10px] font-bold text-on-surface-variant">Audi</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-white border border-outline-variant/30 rounded-xl transition-all">
+<img alt="" class="w-8 h-8 mb-2 grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-mZdJignw4kfyVC2i5PvgnWPqTdPYS6mxOpp9_u9ifMiu7kdJeoUJNKYLt0AmRfVFOoj37EyvfM2HjNvRV86L5Hk03OtNSfQOQigY81fIIYegNOnMjRo7y4PLi-uQQmkttb8KPhe9cYSnpfrTuiDLyqsBPp6LsPe8h5XX7p-dgfQXFnh4-yc79-n2twnSCXf0JN2eneM-DIGSOSjWcgdDzUJtw4aUTN6vTjEL-bd2Qt1w6F1rAfkP2e-uH3v27dU5XCNS3HccAMiB"/>
+<span class="text-[10px] font-bold text-on-surface-variant">LR</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-white border border-outline-variant/30 rounded-xl transition-all">
+<img alt="" class="w-8 h-8 mb-2 grayscale contrast-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCHyZY4ZZz3DjjmzDkmkw7vAuI2mMGfe5MuTKa23VeTzAM0nDaTK-DBK2hS4IETFghBab0HHS-ou6WMs5XpiQJX7lD1iOLHjnKQFfgYffMU1GPinLjW9zYVmBNkjkCKeYG_GpuB2AuHsWBMmlBDenVp9eVGuBpG6hdXCX7udClhaBYmc32SqP7AKitud0ZCujKbFo7qILnkCguOl2AIUS0DNeCQ7O28s5ZEt25GYAyjLsoFW6P7Q2HZTsGKDdSXkmsypgpbjOV6j3j"/>
+<span class="text-[10px] font-bold text-on-surface-variant">Volvo</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-white border border-outline-variant/30 rounded-xl transition-all">
+<span class="material-symbols-outlined text-xl mb-1 text-outline" data-icon="more_horiz">more_horiz</span>
+<span class="text-[10px] font-bold text-on-surface-variant">Other</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<h3 class="text-[10px] uppercase tracking-widest mb-2 text-on-surface-variant font-black">Model</h3>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-0 border-b border-outline-variant/40 py-3 px-0 focus:ring-0 focus:border-primary appearance-none text-sm font-semibold transition-all">
+<option disabled="" selected="" value="">Select</option>
+<option>E-Class</option>
+<option>S-Class</option>
+</select>
+<span class="absolute right-0 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-xs text-outline-variant" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</div>
+</div>
+<div>
+<h3 class="text-[10px] uppercase tracking-widest mb-2 text-on-surface-variant font-black">Year</h3>
+<div class="relative">
+<select class="w-full bg-surface-container-low border-0 border-b border-outline-variant/40 py-3 px-0 focus:ring-0 focus:border-primary appearance-none text-sm font-semibold transition-all">
+<option disabled="" selected="" value="">Year</option>
+<option>2024</option>
+<option>2023</option>
+</select>
+<span class="absolute right-0 top-1/2 -translate-y-1/2 material-symbols-outlined pointer-events-none text-xs text-outline-variant" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-[10px] uppercase tracking-widest mb-4 text-on-surface-variant font-black">Glass Type</h3>
+<div class="space-y-3">
+<label class="flex items-center p-4 bg-white border border-outline-variant/20 rounded-xl cursor-pointer hover:border-primary/50 transition-all group">
+<input checked="" class="w-4 h-4 text-primary border-outline-variant focus:ring-primary/20" name="glass_type" type="radio"/>
+<div class="ml-4 flex-1">
+<div class="text-xs font-bold text-on-surface">Front Windshield</div>
+<div class="text-[10px] text-on-surface-variant">Inc. rain sensor calibration</div>
+</div>
+</label>
+<label class="flex items-center p-4 bg-white border border-outline-variant/20 rounded-xl cursor-pointer hover:border-primary/50 transition-all group">
+<input class="w-4 h-4 text-primary border-outline-variant focus:ring-primary/20" name="glass_type" type="radio"/>
+<div class="ml-4 flex-1">
+<div class="text-xs font-bold text-on-surface">Other Glass</div>
+<div class="text-[10px] text-on-surface-variant">Rear or side tempered glass</div>
+</div>
+</label>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-surface-container flex flex-col gap-2">
+<div class="flex items-center justify-center gap-2 text-on-tertiary-container mb-1">
+<span class="material-symbols-outlined text-[12px] font-bold" data-icon="verified">verified</span>
+<span class="text-[10px] font-extrabold uppercase tracking-tight">Instant Booking Available</span>
+</div>
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+                Continue
+                <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+</main>
+<footer class="bg-surface pb-32 pt-12">
+<div class="px-6 space-y-8 max-w-lg mx-auto">
+<div>
+<div class="text-lg font-extrabold tracking-tight mb-3">WindshieldConcierge</div>
+<p class="text-on-surface-variant text-xs leading-relaxed font-medium">
+                Premium automotive glass care delivered directly to your doorstep.
+            </p>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<div>
+<h4 class="text-[10px] uppercase tracking-widest font-black mb-4">Locations</h4>
+<ul class="space-y-2 text-xs font-bold text-on-surface-variant">
+<li><a class="hover:text-primary" href="#">Delhi</a></li>
+<li><a class="hover:text-primary" href="#">Mumbai</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-[10px] uppercase tracking-widest font-black mb-4">Help</h4>
+<div class="text-xs font-bold text-primary">1800-CONCIERGE</div>
+</div>
+</div>
+<div class="pt-8 border-t border-outline-variant/10 text-center">
+<p class="text-[9px] uppercase tracking-[0.2em] font-bold text-on-surface-variant/60">
+                © 2024 WindshieldConcierge
+            </p>
+</div>
+</div>
+</footer>
+
+</body></html>

@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBooking } from "../BookingStore";
 import { trackStepComplete } from "@/lib/meta-events";
+import { formatINR } from "@/lib/utils";
+import { Shield, Check, Phone, FileText } from "lucide-react";
 
 const schema = z.object({
   customerName: z.string().min(2, "Enter your full name"),
@@ -21,6 +23,25 @@ const schema = z.object({
     .or(z.literal("")),
 });
 type FormData = z.infer<typeof schema>;
+
+const ICONS = [
+  { icon: Shield, label: "ASK CERTIFIED" },
+  { icon: FileText, label: "PAPERLESS" },
+  { icon: Phone, label: "24/7 SUPPORT" },
+];
+
+function formatDate(dateStr?: string) {
+  if (!dateStr) return "—";
+  return new Date(dateStr + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatTime(timeStr?: string) {
+  if (!timeStr) return "—";
+  const [h, m] = timeStr.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const hour = h > 12 ? h - 12 : h === 0 ? 12 : h;
+  return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
+}
 
 export function ContactStep() {
   const { dispatch, goToStep, sessionId, state } = useBooking();
@@ -55,74 +76,141 @@ export function ContactStep() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-navy-900">Your contact details</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          We'll use this to confirm your appointment.
-        </p>
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="name">Full Name</Label>
-        <Input
-          id="name"
-          autoComplete="name"
-          placeholder="Rahul Sharma"
-          className="h-12"
-          {...register("customerName")}
-        />
-        {errors.customerName && (
-          <p className="text-xs text-destructive">{errors.customerName.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="phone">Mobile Number</Label>
-        <div className="flex gap-2">
-          <span className="flex h-12 items-center rounded-md border border-input bg-muted px-3 text-sm text-muted-foreground">
-            +91
-          </span>
-          <Input
-            id="phone"
-            type="tel"
-            inputMode="numeric"
-            autoComplete="tel"
-            maxLength={10}
-            placeholder="98765 43210"
-            className="h-12 flex-1"
-            {...register("customerPhone")}
-          />
+    <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+      {/* Left: Form */}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div>
+          <h2 className="text-3xl font-bold text-black">
+            Secure Your Concierge{" "}
+            <em className="font-bold italic text-gray-400">Service</em>
+          </h2>
+          <p className="mt-2 text-sm text-gray-500">
+            Provide your contact details. A dedicated coordinator will call within 15 minutes to finalise the logistics.
+          </p>
         </div>
-        {errors.customerPhone && (
-          <p className="text-xs text-destructive">{errors.customerPhone.message}</p>
-        )}
-      </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="email">
-          Email Address{" "}
-          <span className="font-normal text-muted-foreground">(optional)</span>
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="email"
-          placeholder="rahul@example.com"
-          className="h-12"
-          {...register("customerEmail")}
-        />
-        {errors.customerEmail && (
-          <p className="text-xs text-destructive">{errors.customerEmail.message}</p>
-        )}
-        <p className="text-xs text-muted-foreground">
-          We'll send your booking confirmation here.
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+            Full Name
+          </Label>
+          <Input
+            autoComplete="name"
+            placeholder="Arjun Malhotra"
+            className="h-12 rounded-lg border-gray-200 focus-visible:border-black focus-visible:ring-0"
+            {...register("customerName")}
+          />
+          {errors.customerName && <p className="text-xs text-red-500">{errors.customerName.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+            Email Address
+          </Label>
+          <Input
+            type="email"
+            autoComplete="email"
+            placeholder="arjun@corporate.in"
+            className="h-12 rounded-lg border-gray-200 focus-visible:border-black focus-visible:ring-0"
+            {...register("customerEmail")}
+          />
+          {errors.customerEmail && <p className="text-xs text-red-500">{errors.customerEmail.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+            Mobile Number
+          </Label>
+          <div className="flex gap-2">
+            <span className="flex h-12 items-center rounded-lg border border-gray-200 bg-stone-50 px-3 text-sm text-gray-500">
+              +91
+            </span>
+            <Input
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel"
+              maxLength={10}
+              placeholder="98765 43210"
+              className="h-12 flex-1 rounded-lg border-gray-200 focus-visible:border-black focus-visible:ring-0"
+              {...register("customerPhone")}
+            />
+          </div>
+          {errors.customerPhone && <p className="text-xs text-red-500">{errors.customerPhone.message}</p>}
+        </div>
+
+        <Button type="submit" variant="black" size="lg" className="w-full">
+          CONFIRM QUOTE REQUEST →
+        </Button>
+
+        <p className="text-xs leading-relaxed text-gray-400">
+          By confirming, you agree to be contacted by a QuickFix technician coordinator. All service personnel are background-verified.
         </p>
-      </div>
+      </form>
 
-      <Button type="submit" variant="amber" size="lg" className="w-full">
-        Review &amp; Confirm →
-      </Button>
-    </form>
+      {/* Right: Booking Summary — desktop only */}
+      <aside className="hidden lg:block">
+        <div className="rounded-xl border border-gray-200 bg-stone-50 p-6">
+          <h3 className="font-serif text-lg font-bold italic text-black">Booking Summary</h3>
+
+          <div className="mt-5 space-y-4 text-sm">
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Vehicle</span>
+              <div className="text-right">
+                <p className="font-semibold text-black">{state.vehicleMake} {state.vehicleModel}</p>
+                <p className="text-xs text-gray-500">{state.vehicleYear} · {state.glassType === "front" ? "Front Windshield" : "Rear / Door Glass"}</p>
+              </div>
+            </div>
+
+            {state.appointmentDate && (
+              <div className="flex justify-between border-b border-gray-100 pb-3">
+                <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Service Date</span>
+                <p className="font-semibold text-black">{formatDate(state.appointmentDate)}</p>
+              </div>
+            )}
+
+            {state.appointmentTime && (
+              <div className="flex justify-between border-b border-gray-100 pb-3">
+                <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Preferred Slot</span>
+                <p className="font-semibold text-black">{formatTime(state.appointmentTime)}</p>
+              </div>
+            )}
+
+            {state.serviceCity && (
+              <div className="flex justify-between border-b border-gray-100 pb-3">
+                <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Location</span>
+                <p className="font-semibold text-black">{state.serviceCity}</p>
+              </div>
+            )}
+
+            <div className="flex justify-between border-b border-gray-100 pb-3">
+              <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Doorstep Fee</span>
+              <p className="font-semibold text-teal-600">COMPLIMENTARY</p>
+            </div>
+
+            {state.quoteAmount ? (
+              <div className="flex justify-between">
+                <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Estimated</span>
+                <p className="font-serif text-xl font-bold text-black">{formatINR(state.quoteAmount)}</p>
+              </div>
+            ) : null}
+          </div>
+
+          {/* Warranty badge */}
+          <div className="mt-5 flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 p-3">
+            <Check className="h-4 w-4 shrink-0 text-teal-600" strokeWidth={3} />
+            <p className="text-xs font-semibold text-teal-700">1-YEAR WARRANTY INCLUDED</p>
+          </div>
+
+          {/* Service icons */}
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            {ICONS.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-1.5 rounded-lg border border-gray-100 bg-white p-2.5 text-center">
+                <Icon className="h-4 w-4 text-gray-500" />
+                <p className="text-xs font-semibold text-gray-500">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </aside>
+    </div>
   );
 }

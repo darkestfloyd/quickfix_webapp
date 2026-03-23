@@ -4,26 +4,27 @@
 
 @layer base {
   :root {
+    /* azure_concierge theme — black/white/teal */
     --background: 0 0% 100%;
-    --foreground: 222 84% 5%;
+    --foreground: 0 0% 7%;
     --card: 0 0% 100%;
-    --card-foreground: 222 84% 5%;
+    --card-foreground: 0 0% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 84% 5%;
-    --primary: 222 84% 15%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 0 0% 7%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 43 96% 56%;
-    --accent-foreground: 222 84% 5%;
+    --secondary: 40 10% 96%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 40 10% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 166 100% 39%;       /* teal #00C9A7 */
+    --accent-foreground: 0 0% 7%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 222 84% 15%;
-    --radius: 0.5rem;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 7%;
+    --radius: 0.375rem;
   }
 }
 
@@ -34,6 +35,9 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3 {
+    @apply font-serif;
   }
 }
 

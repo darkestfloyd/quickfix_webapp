@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MetaPixel } from "@/components/MetaPixel";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  style: ["normal", "italic"],
+});
 
 export const metadata: Metadata = {
-  title: "QuickFix Auto Glass — Doorstep Windshield Repair & Replacement",
+  title: "QuickFix Windshields — Doorstep Windshield Repair & Replacement",
   description:
     "Premium mobile windshield repair and replacement service in Mumbai, Delhi, Bengaluru, Chennai, Hyderabad & Pune. Certified technicians come to your doorstep. Get a free quote in 60 seconds.",
   keywords: [
@@ -22,7 +27,7 @@ export const metadata: Metadata = {
     "car glass repair India",
   ],
   openGraph: {
-    title: "QuickFix Auto Glass — Doorstep Windshield Service",
+    title: "QuickFix Windshields — Doorstep Windshield Service",
     description:
       "Get your windshield repaired or replaced at your doorstep. Serving Mumbai, Delhi, Bengaluru and more.",
     type: "website",
@@ -32,7 +37,7 @@ export const metadata: Metadata = {
 const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  name: "QuickFix Auto Glass",
+  name: "QuickFix Windshields",
   description:
     "Premium mobile windshield repair and replacement service. Technicians come to your doorstep.",
   url: process.env.NEXT_PUBLIC_BASE_URL ?? "https://quickfixglass.in",
@@ -45,7 +50,7 @@ const localBusinessSchema = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         <script
           type="application/ld+json"

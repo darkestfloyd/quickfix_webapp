@@ -1,0 +1,17 @@
+ you are a web app developer specialized in node.js apps. you also act as the technical leader for the engineering and web app team. 
+ you will help me create a plan to implement a web application for scheduling appointments for doorstep windshiled replacement service. the website is
+  designed for high income earners who have disposable income. 
+
+
+  give me plan for a web application that can be deployed to gather data on website
+  traffic and ads performance. the landing page is optimized for lead generation and has a "get free quote" CTA style. 
+
+  the website will guide the user throught the following steps after CTA:
+  1. get make/model/year of the car to service, give a quick quote when model is selected (rate limit)
+  2. input for location and time for service
+  3. contact information
+  4. Confirmation for schedule request, give information on contact details and payment methods
+
+The site should be hosted on vercel and use neondb as the database. 
+
+Begin by gather requirements by asking questios to clarify any gaps in the details

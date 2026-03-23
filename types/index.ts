@@ -76,6 +76,7 @@ export interface BookingState {
   vehicleMake?: string;
   vehicleModel?: string;
   quoteAmount?: number;
+  glassType?: "front" | "rear";
   // Step 2
   servicePin?: string;
   serviceCity?: string;

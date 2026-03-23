@@ -1,27 +1,26 @@
 import { Star } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 
 const TESTIMONIALS = [
   {
-    name: "Rahul Sharma",
-    city: "Mumbai",
-    car: "Hyundai Creta",
+    name: "Rajesh K.",
+    title: "Tech Executive, Bengaluru",
+    car: "BMW 5 Series",
     rating: 5,
-    text: "Cracked my windshield on the highway. Booked QuickFix that evening, technician arrived at my office parking the next morning. Done in 80 minutes. Absolute lifesaver.",
+    text: "Had a crack appear on my way to a board meeting. Booked QuickFix from my phone and the technician was at my office parking by 9 AM the next day. Flawless execution.",
   },
   {
-    name: "Priya Menon",
-    city: "Bengaluru",
+    name: "Priya M.",
+    title: "Corporate Director, Mumbai",
     car: "Toyota Fortuner",
     rating: 5,
-    text: "I was worried about ADAS recalibration for my Fortuner. The technician knew exactly what to do — sensors were calibrated and verified on-site. Very professional service.",
+    text: "The ADAS recalibration after replacement was handled entirely on-site. I was impressed — the technician verified every sensor before leaving. Worth every rupee.",
   },
   {
-    name: "Arjun Kapoor",
-    city: "Delhi",
-    car: "Maruti Baleno",
+    name: "Anand S.",
+    title: "VP of Operations, Delhi",
+    car: "Hyundai Tucson",
     rating: 5,
-    text: "Price was better than the dealer and the glass quality is identical. They came to my home on a Saturday morning. 5 stars, would definitely recommend.",
+    text: "Transparent pricing, no surprises, and they worked with my insurer directly. The whole experience felt like a premium concierge service, not a repair job.",
   },
 ];
 
@@ -29,37 +28,50 @@ function Stars({ count }: { count: number }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: count }).map((_, i) => (
-        <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+        <Star key={i} className="h-3.5 w-3.5 fill-teal-500 text-teal-500" />
       ))}
+    </div>
+  );
+}
+
+function Initials({ name }: { name: string }) {
+  return (
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black text-xs font-bold text-white">
+      {name.split(" ").map((n) => n[0]).join("")}
     </div>
   );
 }
 
 export function Testimonials() {
   return (
-    <section className="bg-gray-50 py-16 sm:py-24">
+    <section className="bg-white py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold text-navy-900 sm:text-4xl">
-            What Our Customers Say
-          </h2>
-          <p className="text-muted-foreground">Real reviews from car owners across India</p>
+        <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-teal-600">
+          The Guest Journal
         </div>
+        <h2 className="mb-12 text-3xl font-bold text-black sm:text-4xl">
+          Trusted by{" "}
+          <em className="font-bold italic text-gray-400">India&apos;s Executives</em>
+        </h2>
 
         <div className="grid gap-6 sm:grid-cols-3">
           {TESTIMONIALS.map((t) => (
-            <Card key={t.name} className="border-0 shadow-sm">
-              <CardContent className="p-6">
+            <div
+              key={t.name}
+              className="flex flex-col justify-between rounded-xl border border-gray-100 bg-stone-50 p-6"
+            >
+              <div>
                 <Stars count={t.rating} />
-                <p className="mt-4 text-sm leading-relaxed text-gray-700">"{t.text}"</p>
-                <div className="mt-4 border-t pt-4">
-                  <p className="font-semibold text-navy-900 text-sm">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t.city} · {t.car}
-                  </p>
+                <p className="mt-4 text-sm leading-relaxed text-gray-700">&ldquo;{t.text}&rdquo;</p>
+              </div>
+              <div className="mt-5 flex items-center gap-3 border-t border-gray-100 pt-4">
+                <Initials name={t.name} />
+                <div>
+                  <p className="text-sm font-semibold text-black">{t.name}</p>
+                  <p className="text-xs text-gray-500">{t.title} · {t.car}</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

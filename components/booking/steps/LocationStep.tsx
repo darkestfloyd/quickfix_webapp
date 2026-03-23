@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useBooking } from "../BookingStore";
 import { trackStepComplete } from "@/lib/meta-events";
-import { Loader2, MapPin, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, MapPin, AlertCircle, CheckCircle2, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { AvailabilitySlot } from "@/types";
 
 const schema = z.object({
@@ -21,21 +22,28 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
-interface SlotsByDate {
-  [date: string]: AvailabilitySlot[];
+interface SlotsByDate { [date: string]: AvailabilitySlot[] }
+
+const DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function formatDayLabel(dateStr: string) {
+  const d = new Date(dateStr + "T00:00:00");
+  return { day: DAYS[d.getDay()], num: d.getDate() };
 }
 
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
+function getMonthLabel(dates: string[]): string {
+  if (!dates.length) return "";
+  const d = new Date(dates[0] + "T00:00:00");
+  return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
 export function LocationStep() {
   const { dispatch, goToStep, sessionId } = useBooking();
   const [pinStatus, setPinStatus] = useState<"idle" | "loading" | "covered" | "uncovered">("idle");
-  const [city, setCity] = useState<string>("");
+  const [city, setCity] = useState("");
   const [slots, setSlots] = useState<SlotsByDate>({});
-  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(null);
 
   const {
@@ -48,7 +56,6 @@ export function LocationStep() {
 
   const pin = watch("servicePin");
 
-  // Check PIN coverage when 6 digits entered
   useEffect(() => {
     if (!pin || !/^\d{6}$/.test(pin)) {
       setPinStatus("idle");
@@ -62,7 +69,6 @@ export function LocationStep() {
         if (data.covered) {
           setPinStatus("covered");
           setCity(data.city ?? "");
-          // Group slots by date
           const grouped: SlotsByDate = {};
           for (const slot of data.slots ?? []) {
             if (!grouped[slot.date]) grouped[slot.date] = [];
@@ -78,17 +84,18 @@ export function LocationStep() {
   }, [pin]);
 
   const dates = Object.keys(slots).sort();
+  const monthLabel = getMonthLabel(dates);
 
   const onSubmit = (data: FormData) => {
-    if (!selectedSlot) return;
+    if (!selectedSlot && pinStatus === "covered") return;
     dispatch({
       type: "SET_LOCATION",
       servicePin: data.servicePin,
       serviceCity: city,
       serviceAddress: data.serviceAddress,
-      appointmentDate: selectedSlot.date,
-      appointmentTime: selectedSlot.time,
-      slotId: selectedSlot.id,
+      appointmentDate: selectedSlot?.date ?? "",
+      appointmentTime: selectedSlot?.time ?? "",
+      slotId: selectedSlot?.id ?? 0,
       pinCovered: pinStatus === "covered",
     });
     trackStepComplete(2, "Location");
@@ -100,69 +107,93 @@ export function LocationStep() {
     goToStep(3);
   };
 
-  // Allow submit even for uncovered PINs
-  const canSubmit = watch("serviceAddress")?.length >= 10 && (pinStatus === "covered" ? !!selectedSlot : pinStatus === "uncovered");
+  const canSubmit = watch("serviceAddress")?.length >= 10 &&
+    (pinStatus === "covered" ? !!selectedSlot : pinStatus === "uncovered");
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-navy-900">Where &amp; When?</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          We'll come to your location at your chosen time.
+        <h2 className="text-3xl font-bold text-black">
+          Where should we{" "}
+          <em className="font-bold italic text-gray-400">meet you?</em>
+        </h2>
+        <p className="mt-2 text-sm text-gray-500">
+          Our specialists provide doorstep service across major Indian metros. Pin your location below.
         </p>
       </div>
 
-      {/* PIN Code */}
-      <div className="space-y-1.5">
-        <Label htmlFor="pin">PIN Code</Label>
-        <div className="relative">
-          <Input
-            id="pin"
+      {/* PIN / Location input */}
+      <div className="space-y-2">
+        <Label className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+          Location PIN Code
+        </Label>
+        <div className="relative flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 focus-within:border-black">
+          <MapPin className="h-4 w-4 shrink-0 text-gray-400" />
+          <input
             inputMode="numeric"
             maxLength={6}
             placeholder="Enter 6-digit PIN code"
-            className="h-12 pr-10"
+            className="flex-1 py-3 text-sm outline-none placeholder:text-gray-400"
             {...register("servicePin")}
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            {pinStatus === "loading" && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-            {pinStatus === "covered" && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-            {pinStatus === "uncovered" && <AlertCircle className="h-4 w-4 text-orange-500" />}
+          <div className="shrink-0">
+            {pinStatus === "loading" && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
+            {pinStatus === "covered" && <CheckCircle2 className="h-4 w-4 text-teal-500" />}
+            {pinStatus === "uncovered" && <AlertCircle className="h-4 w-4 text-gray-400" />}
           </div>
         </div>
-        {errors.servicePin && <p className="text-xs text-destructive">{errors.servicePin.message}</p>}
+        {errors.servicePin && <p className="text-xs text-red-500">{errors.servicePin.message}</p>}
         {pinStatus === "covered" && city && (
-          <p className="flex items-center gap-1 text-xs text-green-600">
-            <MapPin className="h-3 w-3" /> We service {city} — slots available below.
-          </p>
+          <div className="flex items-center gap-1.5 text-xs font-medium text-teal-600">
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            Service Area Marked — {city}
+          </div>
         )}
         {pinStatus === "uncovered" && (
-          <div className="rounded-lg border border-orange-200 bg-orange-50 p-3 text-xs text-orange-700">
-            <p className="font-medium">Outside our current coverage area</p>
-            <p className="mt-0.5">Submit your request anyway — we'll contact you to confirm availability or schedule for a nearby date.</p>
-          </div>
+          <p className="text-xs text-gray-500">
+            Outside current coverage. Submit anyway — we&apos;ll confirm availability within 2 hours.
+          </p>
         )}
       </div>
 
       {/* Service Address */}
-      <div className="space-y-1.5">
-        <Label htmlFor="address">Service Address</Label>
+      <div className="space-y-2">
+        <Label className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+          Service Address
+        </Label>
         <Textarea
-          id="address"
-          placeholder="Flat / House no., Building, Street, Area, City"
-          className="min-h-[80px]"
+          placeholder="Flat / House, Building, Street, Colony, City"
+          className="min-h-[80px] rounded-lg border-gray-200 focus-visible:border-black focus-visible:ring-0"
           {...register("serviceAddress")}
         />
-        {errors.serviceAddress && <p className="text-xs text-destructive">{errors.serviceAddress.message}</p>}
+        {errors.serviceAddress && <p className="text-xs text-red-500">{errors.serviceAddress.message}</p>}
       </div>
 
-      {/* Date & Slot selection (only for covered PINs) */}
+      {/* Calendar + slots for covered PINs */}
       {pinStatus === "covered" && dates.length > 0 && (
-        <>
-          <div className="space-y-2">
-            <Label>Select Date</Label>
-            <div className="flex flex-wrap gap-2">
-              {dates.map((d) => (
+        <div className="space-y-6 rounded-xl border border-gray-100 bg-stone-50 p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+            Select a time that suits your schedule
+          </p>
+
+          {/* Month header */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-black">{monthLabel}</span>
+            <div className="flex gap-1">
+              <button type="button" className="rounded p-1 text-gray-400 hover:text-black">
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button type="button" className="rounded p-1 text-gray-400 hover:text-black">
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Date strip */}
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            {dates.map((d) => {
+              const { day, num } = formatDayLabel(d);
+              return (
                 <button
                   key={d}
                   type="button"
@@ -171,24 +202,29 @@ export function LocationStep() {
                     setSelectedSlot(null);
                     setValue("appointmentDate", d);
                   }}
-                  className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                  className={cn(
+                    "flex shrink-0 flex-col items-center rounded-lg px-3 py-2.5 text-center transition-colors",
                     selectedDate === d
-                      ? "border-amber-500 bg-amber-50 text-amber-700"
-                      : "border-gray-200 bg-white text-gray-700 hover:border-amber-300"
-                  }`}
+                      ? "bg-black text-white"
+                      : "bg-white text-gray-600 hover:bg-gray-100"
+                  )}
                 >
-                  {formatDate(d)}
+                  <span className="text-xs">{day}</span>
+                  <span className="text-lg font-bold leading-tight">{num}</span>
                 </button>
-              ))}
-            </div>
-            {errors.appointmentDate && <p className="text-xs text-destructive">{errors.appointmentDate.message}</p>}
+              );
+            })}
           </div>
+          {errors.appointmentDate && <p className="text-xs text-red-500">{errors.appointmentDate.message}</p>}
 
+          {/* Time slots */}
           {selectedDate && slots[selectedDate] && (
             <div className="space-y-2">
-              <Label>Select Time Slot</Label>
+              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+                Available Slots
+              </p>
               <div className="grid grid-cols-2 gap-2">
-                {slots[selectedDate].map((slot) => (
+                {slots[selectedDate].map((slot, i) => (
                   <button
                     key={slot.id}
                     type="button"
@@ -196,30 +232,51 @@ export function LocationStep() {
                       setSelectedSlot(slot);
                       setValue("slotId", slot.id);
                     }}
-                    className={`rounded-lg border px-3 py-3 text-sm font-medium transition-colors ${
+                    className={cn(
+                      "flex items-center justify-between rounded-lg px-3 py-3 text-left text-sm transition-colors",
                       selectedSlot?.id === slot.id
-                        ? "border-amber-500 bg-amber-50 text-amber-700"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-amber-300"
-                    }`}
+                        ? "bg-black text-white"
+                        : "bg-white text-gray-700 hover:bg-gray-100"
+                    )}
                   >
-                    {slot.label}
+                    <span className="font-medium">{slot.label.split("–")[0].trim()}</span>
+                    {i === 0 && (
+                      <span className={cn(
+                        "text-xs",
+                        selectedSlot?.id === slot.id ? "text-teal-300" : "text-teal-500"
+                      )}>
+                        EARLIEST
+                      </span>
+                    )}
+                    {selectedSlot?.id === slot.id && <Check className="h-3.5 w-3.5" />}
                   </button>
                 ))}
               </div>
-              {errors.slotId && <p className="text-xs text-destructive">{errors.slotId.message}</p>}
+              {errors.slotId && <p className="text-xs text-red-500">{errors.slotId.message}</p>}
             </div>
           )}
-        </>
+
+          {/* Summary pill */}
+          {selectedSlot && (
+            <div className="flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm text-teal-700">
+              <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
+              <span className="font-medium">
+                Scheduled for {new Date(selectedSlot.date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })},{" "}
+                {selectedSlot.label.split("–")[0].trim()}
+              </span>
+            </div>
+          )}
+        </div>
       )}
 
       <Button
         type="submit"
-        variant="amber"
+        variant="black"
         size="lg"
         className="w-full"
         disabled={!canSubmit}
       >
-        Continue to Contact →
+        CONFIRM APPOINTMENT →
       </Button>
     </form>
   );

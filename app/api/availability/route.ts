@@ -28,14 +28,20 @@ export async function GET(req: NextRequest) {
     .where(and(eq(servicePinCoverage.pinCode, pin), eq(servicePinCoverage.isActive, true)))
     .limit(1);
 
-  if (!coverage) {
+  // Fall back to Bengaluru-wide coverage for any 560xxx PIN not in the DB
+  const blrFallback = !coverage && pin.startsWith("560");
+  if (!coverage && !blrFallback) {
     return NextResponse.json({
       covered: false,
       city: null,
       slots: [],
-      message: "We are not currently serving this PIN code. Submit your request and we will review coverage in your area.",
+      message: "We are currently serving Bengaluru only. We'll be expanding soon.",
     });
   }
+
+  const city = coverage?.city ?? "Bengaluru";
+  const state = coverage?.state ?? "Karnataka";
+  const surcharge = coverage ? parseFloat(coverage.surcharge) : 0;
 
   // Return slots for next 7 days with availability
   const today = new Date();
@@ -66,9 +72,9 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     covered: true,
-    city: coverage.city,
-    state: coverage.state,
-    surcharge: parseFloat(coverage.surcharge),
+    city,
+    state,
+    surcharge,
     slots: formattedSlots,
   });
 }

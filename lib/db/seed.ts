@@ -52,19 +52,13 @@ const MARKUP_PERCENTAGE = 15; // 15%
 
 // --- ADD NEW SERVICE AREAS HERE ---
 // surcharge (INR) is added on top of the vehicle quote for harder-to-reach areas
+// Bengaluru-only launch. Any 560xxx PIN is covered by default (API fallback).
+// Add specific entries here only when a surcharge applies for outer areas.
 const PIN_CODES = [
-  { pinCode: "400001", city: "Mumbai", state: "Maharashtra", surcharge: 0 },
-  { pinCode: "400070", city: "Mumbai", state: "Maharashtra", surcharge: 0 },
-  { pinCode: "400601", city: "Mumbai", state: "Maharashtra", surcharge: 500 },
-  { pinCode: "110001", city: "New Delhi", state: "Delhi", surcharge: 0 },
-  { pinCode: "110019", city: "New Delhi", state: "Delhi", surcharge: 0 },
-  { pinCode: "110092", city: "Delhi", state: "Delhi", surcharge: 0 },
   { pinCode: "560001", city: "Bengaluru", state: "Karnataka", surcharge: 0 },
   { pinCode: "560034", city: "Bengaluru", state: "Karnataka", surcharge: 0 },
   { pinCode: "560066", city: "Bengaluru", state: "Karnataka", surcharge: 500 },
-  { pinCode: "600001", city: "Chennai", state: "Tamil Nadu", surcharge: 0 },
-  { pinCode: "500001", city: "Hyderabad", state: "Telangana", surcharge: 0 },
-  { pinCode: "411001", city: "Pune", state: "Maharashtra", surcharge: 0 },
+  { pinCode: "560100", city: "Bengaluru", state: "Karnataka", surcharge: 500 },
 ];
 
 // Generates Mon–Sat slots for the next N days, 8am–6pm in 2-hour windows

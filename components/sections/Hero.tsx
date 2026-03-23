@@ -29,7 +29,7 @@ export function Hero() {
             </h1>
 
             <p className="mb-8 max-w-lg text-lg leading-relaxed text-gray-500">
-              Certified technicians come to your home or office across Mumbai, Delhi, Bengaluru and more. OEM-grade glass, ADAS recalibration, 1-year warranty.
+              Bengaluru&apos;s premium doorstep windshield service. Certified technicians come to your home or office — OEM-grade glass, ADAS recalibration, 1-year warranty.
             </p>
 
             {/* Trust signals row */}

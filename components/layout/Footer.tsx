@@ -46,16 +46,16 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:hello@quickfixglass.in"
+                  href="mailto:hello@quickfixwindshields.co"
                   className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors"
                 >
                   <Mail className="h-3.5 w-3.5 shrink-0" />
-                  hello@quickfixglass.in
+                  hello@quickfixwindshields.co
                 </a>
               </li>
               <li className="flex items-start gap-2 text-gray-500">
                 <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span>Mumbai · Delhi · Bengaluru · Chennai · Hyderabad · Pune</span>
+                <span>Bengaluru, Karnataka</span>
               </li>
             </ul>
           </div>
@@ -66,8 +66,8 @@ export function Footer() {
             © {new Date().getFullYear()} QuickFix Windshields. All rights reserved.
           </p>
           <div className="flex gap-4 text-xs text-gray-400">
-            <Link href="#" className="hover:text-black transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-black transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-black transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-black transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

@@ -1,3 +1,22 @@
+/**
+ * /api/availability  GET
+ *
+ * Query param: ?pin=XXXXXX (6-digit PIN code)
+ *
+ * Coverage logic (in order):
+ *   1. Exact match in service_pin_coverage table → use stored city + surcharge
+ *   2. PIN starts with "560" (not in table) → Bengaluru fallback, surcharge ₹0
+ *   3. Otherwise → covered: false
+ *
+ * Currently serving: Bengaluru only (all 560xxx PINs).
+ * To expand to a new city, add explicit DB entries AND extend the fallback
+ * logic below.
+ *
+ * Response (covered):
+ *   { covered: true, city, state, surcharge, slots: AvailabilitySlot[] }
+ * Response (uncovered):
+ *   { covered: false, city: null, slots: [], message: string }
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { availabilitySlots, servicePinCoverage } from "@/lib/db/schema";

@@ -1,6 +1,9 @@
-# QuickFix Auto Glass
+# QuickFix Windshields
 
-Premium doorstep windshield repair and replacement service targeting high-income car owners in Mumbai, Delhi, Bengaluru, Chennai, Hyderabad, and Pune. Customers book online; a certified technician comes to their location.
+Premium doorstep windshield repair and replacement service in Bengaluru. Customers book online in under 60 seconds; a certified technician arrives at their home or office.
+
+**Website**: [www.quickfixwindshields.co](https://www.quickfixwindshields.co)
+**Email**: hello@quickfixwindshields.co
 
 **Goal:** Lead generation funnel. Every page decision optimises for one outcome — a submitted booking.
 
@@ -10,10 +13,12 @@ Premium doorstep windshield repair and replacement service targeting high-income
 
 | Page | Purpose |
 |------|---------|
-| `/` | Marketing landing page — trust signals, services, testimonials, CTAs |
+| `/` | Marketing landing page — trust signals, services, process, testimonials, coverage |
 | `/booking` | 4-step booking funnel — vehicle → schedule → contact → confirmation |
+| `/privacy` | Privacy Policy |
+| `/terms` | Terms of Service |
 | `/api/quote` | Returns INR price for a given vehicle (rate-limited) |
-| `/api/availability` | Returns open 2-hr slots for a PIN code (next 7 days) |
+| `/api/availability` | Returns open 2-hr slots for a PIN code (560* Bengaluru coverage) |
 | `/api/leads` | Persists a completed booking + attribution data |
 | `/api/track` | Server-side funnel event logging |
 
@@ -26,13 +31,20 @@ Premium doorstep windshield repair and replacement service targeting high-income
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Language | TypeScript (strict) |
 | Styling | Tailwind CSS v3 |
-| UI primitives | shadcn/ui (manually written, no CLI) |
+| UI primitives | shadcn/ui (manually written) |
+| Fonts | Inter (body) + Playfair Display (headings, serif) |
 | Forms | React Hook Form + Zod |
 | Database | Neon (Postgres, serverless) via Drizzle ORM |
 | Rate limiting | Upstash Redis (`@upstash/ratelimit`) |
-| Analytics | Meta Pixel (client-side) + server-side event log |
+| Analytics | Meta Pixel + server-side event log |
 | Deploy | Vercel (region: `bom1` — Mumbai) |
 | Package manager | pnpm |
+
+---
+
+## Service Coverage
+
+Currently serving **Bengaluru only**. The availability API accepts any PIN code beginning with `560` — no individual PIN entries required. Specific surcharges for outer areas can be added to the `service_pin_coverage` table.
 
 ---
 
@@ -41,37 +53,38 @@ Premium doorstep windshield repair and replacement service targeting high-income
 ```
 quickfix/
 ├── app/
-│   ├── layout.tsx          # Root layout: fonts, Schema.org JSON-LD, MetaPixel
-│   ├── page.tsx            # Landing page (composes section components)
-│   ├── globals.css         # Tailwind base + CSS custom properties
-│   ├── booking/
-│   │   └── page.tsx        # Booking funnel page (wraps BookingProvider)
+│   ├── layout.tsx              # Root layout: fonts, Schema.org JSON-LD, MetaPixel
+│   ├── page.tsx                # Landing page (composes section components)
+│   ├── globals.css             # Tailwind base + CSS custom properties (azure_concierge theme)
+│   ├── booking/page.tsx        # 4-step booking funnel
+│   ├── privacy/page.tsx        # Privacy Policy
+│   ├── terms/page.tsx          # Terms of Service
 │   └── api/
-│       ├── quote/          # GET vehicle list | POST price lookup
-│       ├── availability/   # GET open slots by PIN code
-│       ├── leads/          # POST lead submission
-│       └── track/          # POST funnel event
+│       ├── quote/route.ts      # GET vehicle list | POST price lookup
+│       ├── availability/route.ts  # GET open slots by PIN (560* fallback)
+│       ├── leads/route.ts      # POST lead submission
+│       └── track/route.ts      # POST funnel event
 │
 ├── components/
-│   ├── ui/                 # shadcn/ui primitives (button, input, select…)
+│   ├── ui/                     # shadcn/ui primitives (button, input, select, card…)
 │   ├── layout/
-│   │   ├── Header.tsx
-│   │   └── Footer.tsx
-│   ├── sections/           # Landing page sections
-│   │   ├── Hero.tsx
+│   │   ├── Header.tsx          # White sticky header, hamburger mobile menu
+│   │   └── Footer.tsx          # Light footer, payment badges, legal links
+│   ├── sections/               # Landing page sections
+│   │   ├── Hero.tsx            # Split desktop / stacked mobile
 │   │   ├── Services.tsx
-│   │   ├── HowItWorks.tsx
-│   │   ├── TrustSignals.tsx
-│   │   ├── Testimonials.tsx
-│   │   └── CoverageStrip.tsx
+│   │   ├── HowItWorks.tsx      # Faded step numbers (01/02/03)
+│   │   ├── TrustSignals.tsx    # Dark section with teal checkmarks
+│   │   ├── Testimonials.tsx    # Exec-persona testimonials
+│   │   └── CoverageStrip.tsx   # Bengaluru focus strip
 │   ├── booking/
-│   │   ├── BookingStore.tsx       # Context + useReducer for form state
-│   │   ├── BookingForm.tsx        # Step container + progress bar
+│   │   ├── BookingStore.tsx    # Context + useReducer — all funnel state
+│   │   ├── BookingForm.tsx     # Tab-style progress + step routing
 │   │   └── steps/
-│   │       ├── VehicleStep.tsx    # Year/make/model selects + live quote
-│   │       ├── LocationStep.tsx   # PIN code, address, date, time slot
-│   │       ├── ContactStep.tsx    # Name, mobile, email
-│   │       └── ConfirmationStep.tsx # Lead submit + payment info
+│   │       ├── VehicleStep.tsx      # Brand grid + glass type radio + live quote
+│   │       ├── LocationStep.tsx     # PIN input, calendar, time slots
+│   │       ├── ContactStep.tsx      # Form + booking summary card (desktop)
+│   │       └── ConfirmationStep.tsx # Auto-submit, dark arrival card, payment info
 │   └── MetaPixel.tsx
 │
 ├── lib/
@@ -80,42 +93,40 @@ quickfix/
 │   ├── meta-events.ts      # fbq() wrappers (trackQuoteView, trackLeadSubmit…)
 │   ├── rate-limit.ts       # Upstash sliding-window rate limiter (fail-open)
 │   └── db/
-│       ├── index.ts        # Drizzle client (Neon HTTP)
+│       ├── index.ts        # Drizzle + Neon HTTP client
 │       ├── schema.ts       # All table definitions
-│       ├── migrate.ts      # Migration runner (tsx lib/db/migrate.ts)
-│       └── seed.ts         # Seed: vehicles, PIN codes, availability slots
+│       ├── migrate.ts      # Migration runner
+│       └── seed.ts         # Seed: vehicles, Bengaluru PINs, availability slots
 │
-├── types/
-│   └── index.ts            # Shared TypeScript interfaces
-│
+├── types/index.ts          # Shared TS types (BookingState, LeadRequest, etc.)
 ├── .env.example            # All required env vars with descriptions
 ├── drizzle.config.ts       # Drizzle Kit config
-├── vercel.json             # Vercel region config (bom1)
-└── CLAUDE.md               # AI agent instructions (conventions, constraints)
+└── vercel.json             # Vercel region config (bom1)
 ```
 
 ---
 
 ## Key Design Decisions
 
-**Single-page booking funnel** — state lives in React Context + sessionStorage (not URL params). This avoids full page reloads between steps and preserves state on accidental refresh.
+**azure_concierge theme** — black/white/teal palette, Playfair Display serif headings with italic emphasis pattern (`"Effortless` *`Restoration`*`"`). No navy or amber. CTAs are black uppercase with letter-spacing.
 
-**Server Components by default** — only booking steps and header use `"use client"`. Landing page sections are pure server components.
+**Single-page booking funnel** — state lives in React Context + sessionStorage, not URL params. Preserves state on accidental refresh without full page reloads between steps.
 
-**Fail-open rate limiting** — if Upstash is unavailable the quote API still responds. Prevents Redis outages from blocking sales.
+**560* PIN fallback** — instead of requiring every Bengaluru PIN to be seeded, the availability API automatically covers any `560xxx` PIN. Only add DB entries when a location-specific surcharge applies.
 
-**Attribution at lead level** — UTM params and `fbclid` are captured on first page load and persisted to every lead record. This connects Meta ad spend to actual bookings.
+**Server Components by default** — only booking steps and header use `"use client"`. Landing page sections are pure server components for fast LCP.
 
-**India-specific** — PIN codes (6-digit), INR currency, 10-digit mobile validation (starts 6–9), UPI/card/cash payment methods.
+**Fail-open rate limiting** — if Upstash is unavailable, the quote API still responds. Prevents Redis outages from blocking sales.
+
+**Attribution at lead level** — UTM params and `fbclid` are captured on first page load and stored in sessionStorage, then written to every lead record. Connects Meta ad spend to actual bookings.
 
 ---
 
 ## Development Commands
 
 ```bash
-pnpm dev          # Dev server at localhost:3000 (Turbopack)
+pnpm dev          # Dev server at localhost:3000
 pnpm build        # Production build
-pnpm start        # Start production server
 pnpm lint         # ESLint
 pnpm typecheck    # tsc --noEmit
 

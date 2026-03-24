@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -16,7 +15,7 @@ import {
 import { useBooking } from "../BookingStore";
 import { trackQuoteView, trackStepComplete } from "@/lib/meta-events";
 import { formatINR, cn } from "@/lib/utils";
-import { Loader2, Shield, Check } from "lucide-react";
+import { Shield, Check } from "lucide-react";
 
 const schema = z.object({
   make: z.string().min(1, "Select a make"),
@@ -30,6 +29,7 @@ interface VehicleOption {
   year: number;
   make: string;
   model: string;
+  currentPrice: string;
 }
 
 const YEARS = Array.from({ length: 10 }, (_, i) => 2024 - i);
@@ -46,7 +46,6 @@ export function VehicleStep() {
   const { dispatch, goToStep, sessionId } = useBooking();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
   const [quote, setQuote] = useState<number | null>(null);
-  const [quoteLoading, setQuoteLoading] = useState(false);
   const [quoteError, setQuoteError] = useState<string | null>(null);
 
   const {
@@ -61,7 +60,7 @@ export function VehicleStep() {
   const selectedYear = watch("year");
   const selectedGlass = watch("glassType");
 
-  // Load vehicles on mount
+  // Load vehicles on mount — response is HTTP-cached for 1 hour
   useEffect(() => {
     fetch("/api/quote")
       .then((r) => r.json())
@@ -76,30 +75,24 @@ export function VehicleStep() {
     .map((v) => v.model)
     .sort();
 
-  // Fetch quote when model + year selected
+  // Instant client-side price lookup — no network call needed
   useEffect(() => {
     if (!selectedYear || !selectedMake || !selectedModel) return;
-    setQuoteLoading(true);
-    setQuoteError(null);
-    setQuote(null);
 
-    fetch("/api/quote", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ year: selectedYear, make: selectedMake, model: selectedModel }),
-    })
-      .then((r) => r.json())
-      .then((data: { quote?: number; error?: string }) => {
-        if (data.quote) {
-          setQuote(data.quote);
-          trackQuoteView(data.quote);
-        } else {
-          setQuoteError(data.error ?? "Unable to fetch quote");
-        }
-      })
-      .catch(() => setQuoteError("Network error. Please try again."))
-      .finally(() => setQuoteLoading(false));
-  }, [selectedYear, selectedMake, selectedModel]);
+    const match = vehicles.find(
+      (v) => v.make === selectedMake && v.model === selectedModel && v.year === selectedYear
+    );
+
+    if (match) {
+      const price = parseFloat(match.currentPrice);
+      setQuote(price);
+      setQuoteError(null);
+      trackQuoteView(price);
+    } else {
+      setQuote(null);
+      setQuoteError("Vehicle not in our price list. We'll contact you with a custom quote.");
+    }
+  }, [selectedYear, selectedMake, selectedModel, vehicles]);
 
   const onSubmit = (data: FormData) => {
     if (!quote && !quoteError) return;
@@ -268,15 +261,8 @@ export function VehicleStep() {
         {errors.glassType && <p className="text-xs text-red-500">{errors.glassType.message}</p>}
       </div>
 
-      {/* Quote display */}
-      {quoteLoading && (
-        <div className="flex items-center gap-2 rounded-lg bg-gray-50 p-4 text-sm text-gray-500">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Fetching your quote...
-        </div>
-      )}
-
-      {quote && !quoteLoading && (
+      {/* Quote display — appears instantly on year selection */}
+      {quote && (
         <div className="animate-fade-in rounded-xl border border-gray-200 bg-stone-50 p-5">
           <div className="flex items-center justify-between">
             <div>
@@ -323,7 +309,7 @@ export function VehicleStep() {
         variant="black"
         size="lg"
         className="w-full"
-        disabled={!selectedModel || !selectedGlass || quoteLoading || (!quote && !quoteError)}
+        disabled={!selectedModel || !selectedGlass || (!quote && !quoteError)}
       >
         CONTINUE TO SCHEDULE →
       </Button>

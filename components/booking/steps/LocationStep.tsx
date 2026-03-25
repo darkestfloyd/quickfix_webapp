@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useBooking } from "../BookingStore";
 import { trackStepComplete } from "@/lib/meta-events";
-import { Loader2, MapPin, AlertCircle, CheckCircle2, Check } from "lucide-react";
+import { Loader2, MapPin, AlertCircle, CheckCircle2, Check, Ban } from "lucide-react";
 import { cn, istTomorrow } from "@/lib/utils";
 import type { AvailabilitySlot } from "@/types";
 
@@ -46,6 +46,18 @@ function isSlotBlocked(slot: AvailabilitySlot): boolean {
   // Tomorrow's first slot (9am) is always blocked
   if (slot.date === getTomorrowStr() && slot.time.startsWith("09")) return true;
   return false;
+}
+
+function getSlotLabel(time: string): string {
+  if (time.startsWith("09")) return "Morning";
+  if (time.startsWith("12")) return "Afternoon";
+  return "Late Afternoon";
+}
+
+function formatSummaryDate(dateStr: string): string {
+  if (dateStr === getTomorrowStr()) return "Tomorrow";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
 }
 
 export function LocationStep() {
@@ -225,9 +237,10 @@ export function LocationStep() {
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
                 Available Slots
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col gap-2">
                 {slots[selectedDate].map((slot) => {
                   const blocked = isSlotBlocked(slot);
+                  const selected = selectedSlot?.id === slot.id;
                   return (
                     <button
                       key={slot.id}
@@ -239,16 +252,45 @@ export function LocationStep() {
                         setValue("slotId", slot.id);
                       }}
                       className={cn(
-                        "flex items-center justify-between rounded-lg px-3 py-3 text-left text-sm transition-colors",
+                        "flex items-center gap-3 rounded-lg border p-4 text-left transition-colors",
                         blocked
-                          ? "cursor-not-allowed border border-gray-200 bg-gray-50 opacity-50"
-                          : selectedSlot?.id === slot.id
-                          ? "bg-black text-white"
-                          : "bg-white text-gray-700 hover:bg-gray-100"
+                          ? "cursor-not-allowed border-gray-200 bg-gray-50 opacity-50"
+                          : selected
+                          ? "border-black bg-black text-white"
+                          : "border-gray-200 bg-white hover:border-gray-400"
                       )}
                     >
-                      <span className="font-medium">{slot.label}</span>
-                      {!blocked && selectedSlot?.id === slot.id && <Check className="h-3.5 w-3.5" />}
+                      {/* Radio circle */}
+                      <div className={cn(
+                        "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
+                        blocked
+                          ? "border-gray-300 bg-gray-100"
+                          : selected
+                          ? "border-white bg-white"
+                          : "border-gray-300"
+                      )}>
+                        {blocked
+                          ? <Ban className="h-3 w-3 text-gray-400" />
+                          : selected
+                          ? <div className="h-2 w-2 rounded-full bg-black" />
+                          : null
+                        }
+                      </div>
+                      {/* Label + time */}
+                      <div>
+                        <p className={cn(
+                          "text-xs font-semibold uppercase tracking-widest",
+                          blocked ? "text-gray-400" : selected ? "text-gray-300" : "text-gray-400"
+                        )}>
+                          {getSlotLabel(slot.time)}
+                        </p>
+                        <p className={cn(
+                          "text-sm font-medium",
+                          blocked ? "text-gray-400" : selected ? "text-white" : "text-black"
+                        )}>
+                          {slot.label}
+                        </p>
+                      </div>
                     </button>
                   );
                 })}
@@ -257,13 +299,12 @@ export function LocationStep() {
             </div>
           )}
 
-          {/* Summary pill */}
+          {/* Availability confirmation */}
           {selectedSlot && (
             <div className="flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-2 text-sm text-teal-700">
               <Check className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
               <span className="font-medium">
-                Scheduled for {new Date(selectedSlot.date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })},{" "}
-                {selectedSlot.label.split("–")[0].trim()}
+                Available — {formatSummaryDate(selectedSlot.date)}, {selectedSlot.label}
               </span>
             </div>
           )}

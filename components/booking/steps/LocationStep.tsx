@@ -55,7 +55,7 @@ function getSlotLabel(time: string): string {
 }
 
 function formatSummaryDate(dateStr: string): string {
-  if (dateStr === getTomorrowStr()) return "Tomorrow";
+  if (dateStr === getTomorrowStr()) return "Next Day";
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
 }

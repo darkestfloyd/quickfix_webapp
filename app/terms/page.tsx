@@ -39,27 +39,26 @@ export default function TermsPage() {
           </p>
           <p className="text-sm">
             These Terms apply to all visitors, users, and customers of QuickFix Windshields, a doorstep windshield
-            repair and replacement service operating in Bengaluru, Karnataka, India.
+            repair and replacement service.
           </p>
         </Section>
 
         <Section title="Service Description">
           <p className="text-sm">
             QuickFix Windshields provides mobile, doorstep windshield repair and replacement services. A certified
-            technician travels to the customer&apos;s specified location (home, office, or other address) within Bengaluru
+            technician travels to the customer&apos;s specified location (home, office, or other address) 
             to perform the requested service.
           </p>
           <p className="text-sm">
             Services offered include:
           </p>
           <ul className="list-disc pl-5 space-y-1 text-sm">
-            <li>Chip and crack repair</li>
             <li>Front windshield replacement</li>
             <li>Rear and door glass replacement</li>
             <li>ADAS (Advanced Driver Assistance System) camera and sensor recalibration</li>
+            <li>Chip and crack repair</li>
           </ul>
           <p className="text-sm">
-            We currently serve all PIN codes in Bengaluru beginning with <strong className="text-black">560</strong>.
             Service availability in specific localities is subject to technician availability and may vary.
           </p>
         </Section>
@@ -68,9 +67,7 @@ export default function TermsPage() {
           <p className="text-sm">
             Quotes provided through our website are <strong className="text-black">estimates</strong> based on your
             vehicle make, model, year, and glass type. The final price is confirmed by the technician upon arrival,
-            after physically inspecting the vehicle. The final price will not exceed the quoted estimate unless
-            additional damage is discovered during inspection that was not disclosed at time of booking, or unless
-            you request additional services.
+            after physically inspecting the vehicle. # TODO add cost depends on complexity of installation due to sensors
           </p>
           <p className="text-sm">
             A booking request does not constitute a confirmed appointment until you receive a confirmation call or
@@ -87,7 +84,7 @@ export default function TermsPage() {
           </p>
           <p className="text-sm">
             If a technician has already been dispatched and you are unavailable or cancel on arrival, a visit fee
-            may be charged to cover travel costs. We will inform you of this fee in advance.
+            may be charged to cover travel costs. 
           </p>
         </Section>
 
@@ -102,7 +99,7 @@ export default function TermsPage() {
           </ul>
           <p className="text-sm">
             No advance payment is required to confirm a booking. Prices are inclusive of OEM-grade glass,
-            adhesive, labour, and doorstep service. GST is included in the quoted price where applicable.
+            adhesive, labour, and doorstep service. Applicable taxes are included in the quoted price where applicable.
           </p>
         </Section>
 
@@ -158,8 +155,7 @@ export default function TermsPage() {
           <p className="text-sm">
             We use OEM (Original Equipment Manufacturer) grade glass or OEM-equivalent glass that meets the
             specifications of the original glass installed in your vehicle. Where OEM glass is available for your
-            vehicle, we will use it; otherwise, we use certified aftermarket glass that meets Indian safety standards.
-            We will inform you of the glass type to be used prior to commencing work.
+            vehicle, we will use it; otherwise, we will inform you of the unavailability.
           </p>
         </Section>
 

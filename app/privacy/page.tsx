@@ -31,7 +31,7 @@ export default function PrivacyPage() {
         <Section title="Who We Are">
           <p>
             QuickFix Windshields (&ldquo;we&rdquo;, &ldquo;us&rdquo;, &ldquo;our&rdquo;) is a doorstep windshield repair and
-            replacement service operating in Bengaluru, Karnataka, India. Our website is located at{" "}
+            replacement service. Our website is located at{" "}
             <a href="https://www.quickfixwindshields.co" className="text-black underline underline-offset-2">
               www.quickfixwindshields.co
             </a>{" "}

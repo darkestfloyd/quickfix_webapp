@@ -25,9 +25,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const ICONS = [
-  { icon: Shield, label: "ASK CERTIFIED" },
-  { icon: FileText, label: "PAPERLESS" },
-  { icon: Phone, label: "24/7 SUPPORT" },
+  { icon: Shield, label: "NO SURPRISES" },
+  { icon: FileText, label: "FULL INVOICE" },
+  { icon: Phone, label: "QUICK SUPPORT" },
 ];
 
 function formatDate(dateStr?: string) {
@@ -41,6 +41,20 @@ function formatTime(timeStr?: string) {
   const ampm = h >= 12 ? "PM" : "AM";
   const hour = h > 12 ? h - 12 : h === 0 ? 12 : h;
   return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
+}
+
+// Fixed slot end times keyed by start time HH
+const SLOT_END: Record<string, string> = {
+  "09": "12:00 PM",
+  "12": "2:00 PM",
+  "14": "5:00 PM",
+};
+
+function formatSlotWindow(timeStr?: string) {
+  if (!timeStr) return "—";
+  const hh = timeStr.slice(0, 2);
+  const end = SLOT_END[hh];
+  return end ? `${formatTime(timeStr)} – ${end}` : formatTime(timeStr);
 }
 
 export function ContactStep() {
@@ -170,7 +184,7 @@ export function ContactStep() {
             {state.appointmentTime && (
               <div className="flex justify-between border-b border-gray-100 pb-3">
                 <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Preferred Slot</span>
-                <p className="font-semibold text-black">{formatTime(state.appointmentTime)}</p>
+                <p className="font-semibold text-black">{formatSlotWindow(state.appointmentTime)}</p>
               </div>
             )}
 
@@ -183,7 +197,7 @@ export function ContactStep() {
 
             <div className="flex justify-between border-b border-gray-100 pb-3">
               <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">Doorstep Fee</span>
-              <p className="font-semibold text-teal-600">COMPLIMENTARY</p>
+              <p className="font-semibold text-teal-600">FREE</p>
             </div>
 
             {state.quoteAmount ? (
@@ -197,7 +211,7 @@ export function ContactStep() {
           {/* Warranty badge */}
           <div className="mt-5 flex items-center gap-2 rounded-lg border border-teal-200 bg-teal-50 p-3">
             <Check className="h-4 w-4 shrink-0 text-teal-600" strokeWidth={3} />
-            <p className="text-xs font-semibold text-teal-700">1-YEAR WARRANTY INCLUDED</p>
+            <p className="text-xs font-semibold text-teal-700">1-YEAR BUBBLE-FREE WARRANTY INCLUDED</p>
           </div>
 
           {/* Service icons */}

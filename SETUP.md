@@ -140,12 +140,37 @@ VALUES (2024, 'Kia', 'Seltos', 6000, 6900);
 
 ## Adding / Modifying Service Areas (PIN codes)
 
-Edit the `PIN_CODES` array in `lib/db/seed.ts` and re-run `pnpm db:seed`, or insert directly:
+### Coverage logic
+The site currently serves **Bengaluru only**. The availability API uses a two-step lookup:
+1. Exact match in `service_pin_coverage` table → uses the stored city and surcharge
+2. PIN starts with `560` (not in table) → automatically covered as Bengaluru, surcharge ₹0
+
+**You do not need to seed individual PINs for basic Bengaluru coverage.** Only add entries to the table when a specific surcharge applies (e.g. outer-zone delivery fee).
+
+### Adding a surcharge for a specific area
+
+Edit `PIN_CODES` in `lib/db/seed.ts` and re-run `pnpm db:seed`:
+
+```ts
+{ pinCode: "560300", city: "Bengaluru", state: "Karnataka", surcharge: 500 },
+```
+
+Or insert directly via Neon SQL Editor:
 
 ```sql
 INSERT INTO service_pin_coverage (pin_code, city, state, is_active, surcharge)
-VALUES ('500082', 'Hyderabad', 'Telangana', true, 0);
+VALUES ('560300', 'Bengaluru', 'Karnataka', true, 500);
 ```
+
+### Expanding to a new city
+Add its PIN codes with explicit entries (the 560* fallback only applies to Bengaluru):
+
+```sql
+INSERT INTO service_pin_coverage (pin_code, city, state, is_active, surcharge)
+VALUES ('400001', 'Mumbai', 'Maharashtra', true, 0);
+```
+
+Then update the `blrFallback` logic in `app/api/availability/route.ts` to extend the prefix-based fallback to the new city's PIN range.
 
 ---
 
@@ -230,7 +255,7 @@ Under **Settings → Environment Variables**, add everything from `.env.example`
 | `UPSTASH_REDIS_REST_URL` | Upstash REST URL |
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash token |
 | `NEXT_PUBLIC_META_PIXEL_ID` | Real Pixel ID |
-| `NEXT_PUBLIC_BASE_URL` | `https://yourdomain.com` |
+| `NEXT_PUBLIC_BASE_URL` | `https://www.quickfixwindshields.co` |
 | `NEXT_PUBLIC_BUSINESS_PHONE` | `+91 XXXXX XXXXX` |
 | `NEXT_PUBLIC_BUSINESS_WHATSAPP` | `91XXXXXXXXXX` |
 
@@ -252,7 +277,7 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 | `UPSTASH_REDIS_REST_URL` | No | Rate limiting (fails open if missing) |
 | `UPSTASH_REDIS_REST_TOKEN` | No | Rate limiting (fails open if missing) |
 | `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID — use `PLACEHOLDER_PIXEL_ID` until ready |
-| `NEXT_PUBLIC_BASE_URL` | No | Used in Schema.org JSON-LD |
+| `NEXT_PUBLIC_BASE_URL` | No | Used in Schema.org JSON-LD. Production: `https://www.quickfixwindshields.co` |
 | `NEXT_PUBLIC_BUSINESS_PHONE` | No | Shown in header, footer, confirmation page |
 | `NEXT_PUBLIC_BUSINESS_WHATSAPP` | No | WhatsApp deep link on confirmation page |
 
@@ -267,7 +292,7 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 → The vehicle isn't in `vehicle_pricing`. Add it via seed or direct SQL insert (see above).
 
 **PIN code shows "outside coverage"**
-→ The PIN isn't in `service_pin_coverage`. Add it via seed or direct SQL insert.
+→ Any `560xxx` PIN is automatically covered via API fallback — no DB entry needed. If a `560xxx` PIN is showing as uncovered, check `app/api/availability/route.ts` for the `blrFallback` logic. For non-Bengaluru PINs, add the PIN explicitly to `service_pin_coverage`.
 
 **No slots available for a date**
 → Either the slots weren't seeded, or `booked_count >= max_bookings`. Run `pnpm db:seed` or insert new slots directly. For a quick fix: `UPDATE availability_slots SET booked_count = 0;`

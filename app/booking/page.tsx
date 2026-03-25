@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 export default function BookingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="border-b bg-white py-4 text-center">
+      <div className="hidden border-b bg-white py-4 text-center sm:block">
         <p className="text-sm text-muted-foreground">
-          <span className="font-semibold text-navy-900">QuickFix Auto Glass</span> —{" "}
+          <span className="font-semibold text-black">QuickFix Windshields</span> —{" "}
           Doorstep service · OEM glass · 1-year warranty
         </p>
       </div>

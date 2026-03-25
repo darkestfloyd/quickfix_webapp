@@ -25,7 +25,7 @@ const leadSchema = z.object({
   vehicleModel: z.string().min(1).max(100),
   quoteAmount: z.number().positive(),
   servicePin: z.string().regex(/^\d{6}$/),
-  serviceCity: z.string().min(1).max(100),
+  serviceCity: z.string().max(100),
   serviceAddress: z.string().min(5).max(500),
   appointmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   appointmentTime: z.string().regex(/^\d{2}:\d{2}/),

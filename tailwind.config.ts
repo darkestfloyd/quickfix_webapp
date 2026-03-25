@@ -43,15 +43,18 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        navy: {
-          900: "#0a1628",
-          800: "#0f2040",
-          700: "#1a3058",
+        teal: {
+          DEFAULT: "#00C9A7",
+          50: "#e6faf6",
+          100: "#b3f0e6",
+          500: "#00C9A7",
+          600: "#00a389",
+          700: "#007d69",
         },
-        amber: {
-          400: "#fbbf24",
-          500: "#f59e0b",
-          600: "#d97706",
+        stone: {
+          50: "#fafaf9",
+          100: "#f5f5f4",
+          200: "#e7e5e4",
         },
       },
       borderRadius: {
@@ -61,6 +64,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        serif: ["var(--font-playfair)", "Georgia", "serif"],
       },
       keyframes: {
         "accordion-down": {

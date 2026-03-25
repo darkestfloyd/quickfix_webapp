@@ -1,6 +1,5 @@
 "use client";
 
-import { Progress } from "@/components/ui/progress";
 import { useBooking } from "./BookingStore";
 import { VehicleStep } from "./steps/VehicleStep";
 import { LocationStep } from "./steps/LocationStep";
@@ -8,9 +7,10 @@ import { ContactStep } from "./steps/ContactStep";
 import { ConfirmationStep } from "./steps/ConfirmationStep";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const STEPS = [
-  { number: 1, label: "Vehicle" },
+  { number: 1, label: "Car Details" },
   { number: 2, label: "Schedule" },
   { number: 3, label: "Contact" },
   { number: 4, label: "Confirm" },
@@ -18,41 +18,50 @@ const STEPS = [
 
 export function BookingForm() {
   const { state, goToStep } = useBooking();
-  const progress = ((state.step - 1) / (STEPS.length - 1)) * 100;
+  const pct = Math.round(((state.step - 1) / (STEPS.length - 1)) * 100);
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-8 sm:py-12">
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:py-12">
+
       {/* Step header */}
       <div className="mb-8">
-        <div className="mb-3 flex items-center justify-between text-sm">
-          <span className="font-medium text-navy-900">
-            Step {state.step} of {STEPS.length} — {STEPS[state.step - 1].label}
-          </span>
+        {/* Step label + back */}
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+              Step {String(state.step).padStart(2, "0")} of {STEPS.length}
+            </p>
+            <p className="text-xs text-gray-400">{pct}% complete</p>
+          </div>
           {state.step > 1 && state.step < 4 && (
             <Button
               variant="ghost"
               size="sm"
-              className="gap-1 text-muted-foreground"
+              className="gap-1 text-xs text-gray-400 hover:text-black"
               onClick={() => goToStep((state.step - 1) as 1 | 2 | 3 | 4)}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-3.5 w-3.5" />
               Back
             </Button>
           )}
         </div>
 
-        <Progress value={progress} className="h-1.5" />
-
-        <div className="mt-2 flex justify-between">
+        {/* Tab-style progress */}
+        <div className="flex border-b border-gray-200">
           {STEPS.map((s) => (
-            <span
+            <div
               key={s.number}
-              className={`text-xs ${
-                s.number <= state.step ? "text-amber-500 font-medium" : "text-muted-foreground"
-              }`}
+              className={cn(
+                "flex-1 pb-3 text-center text-xs font-semibold uppercase tracking-wider transition-colors",
+                s.number === state.step
+                  ? "border-b-2 border-black text-black"
+                  : s.number < state.step
+                  ? "text-teal-600"
+                  : "text-gray-300"
+              )}
             >
               {s.label}
-            </span>
+            </div>
           ))}
         </div>
       </div>

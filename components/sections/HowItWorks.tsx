@@ -4,52 +4,59 @@ import { Button } from "@/components/ui/button";
 const STEPS = [
   {
     number: "01",
-    title: "Get a Free Quote",
-    description: "Select your car make, model, and year. We'll instantly show you the price — no hidden fees.",
+    title: "Virtual Quote",
+    description: "Select your vehicle and glass type. Get an instant, accurate INR price — no hidden fees, no phone calls required.",
   },
   {
     number: "02",
-    title: "Pick a Time & Location",
-    description: "Choose a 2-hour appointment window that fits your schedule. We come to your home, office, or anywhere.",
+    title: "Expert Service Arrival",
+    description: "Choose a 2-hour window at your home or office. A certified technician arrives fully equipped.",
   },
   {
     number: "03",
-    title: "We Come to You",
-    description: "A certified technician arrives with all equipment. Your car is ready in 90 minutes, glass sealed in 24 hours.",
+    title: "Precision Install",
+    description: "OEM-grade glass fitted and sealed. ADAS cameras recalibrated on-site. Your car is ready in 90 minutes.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-gray-50 py-16 sm:py-24">
+    <section id="how-it-works" className="bg-stone-100 py-16 sm:py-24">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold text-navy-900 sm:text-4xl">
-            How It Works
+        <div className="mb-3 text-xs font-semibold uppercase tracking-widest text-teal-600">
+          The Process
+        </div>
+        <div className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="text-3xl font-bold text-black sm:text-4xl">
+            Effortless{" "}
+            <em className="font-bold italic text-gray-400">Restoration</em>
           </h2>
-          <p className="text-muted-foreground">
-            Three simple steps. Zero hassle.
+          <p className="max-w-sm text-sm text-gray-500">
+            Three steps. Zero hassle. We handle everything — you keep your schedule.
           </p>
         </div>
 
-        <div className="relative grid gap-8 sm:grid-cols-3">
-          {/* Connector line (desktop) */}
-          <div className="absolute left-1/6 right-1/6 top-8 hidden h-px bg-amber-200 sm:block" />
-
+        <div className="grid gap-6 sm:grid-cols-3">
           {STEPS.map((step) => (
-            <div key={step.number} className="relative text-center">
-              <div className="relative mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border-4 border-amber-100 bg-white shadow-sm">
-                <span className="text-xl font-bold text-amber-500">{step.number}</span>
+            <div key={step.number} className="relative rounded-xl bg-white p-6 shadow-sm">
+              {/* Large faded number */}
+              <div className="absolute right-4 top-2 font-serif text-8xl font-bold leading-none text-gray-100 select-none">
+                {step.number}
               </div>
-              <h3 className="mb-2 font-semibold text-navy-900">{step.title}</h3>
-              <p className="text-sm text-muted-foreground">{step.description}</p>
+              <div className="relative">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-teal-600">
+                  Step {step.number}
+                </p>
+                <h3 className="mb-3 text-lg font-bold text-black">{step.title}</h3>
+                <p className="text-sm leading-relaxed text-gray-500">{step.description}</p>
+              </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <Button asChild variant="amber" size="lg">
-            <Link href="/booking">Book Your Service →</Link>
+        <div className="mt-10 text-center">
+          <Button asChild variant="black" size="lg">
+            <Link href="/booking">BOOK YOUR SERVICE →</Link>
           </Button>
         </div>
       </div>

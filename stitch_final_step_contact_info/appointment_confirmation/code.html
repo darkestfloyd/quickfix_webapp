@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Booking Confirmed | QuickFix Windshields</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-fixed-dim": "#8bd6b6",
+              "inverse-surface": "#2d3133",
+              "tertiary-fixed": "#a6f2d1",
+              "secondary-fixed": "#d5e3fd",
+              "on-tertiary": "#ffffff",
+              "surface-container-high": "#e6e8ea",
+              "on-primary": "#ffffff",
+              "surface-variant": "#e0e3e5",
+              "background": "#f7f9fb",
+              "on-primary-fixed-variant": "#3f465c",
+              "error": "#ba1a1a",
+              "surface-dim": "#d8dadc",
+              "surface-bright": "#f7f9fb",
+              "surface": "#f7f9fb",
+              "error-container": "#ffdad6",
+              "outline": "#76777d",
+              "inverse-on-surface": "#eff1f3",
+              "on-surface": "#191c1e",
+              "on-secondary-fixed": "#0d1c2f",
+              "secondary": "#515f74",
+              "primary-fixed": "#dae2fd",
+              "surface-container": "#eceef0",
+              "outline-variant": "#c6c6cd",
+              "on-secondary-fixed-variant": "#3a485c",
+              "on-secondary-container": "#57657b",
+              "on-surface-variant": "#45464d",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#d5e3fd",
+              "on-error-container": "#93000a",
+              "tertiary": "#000000",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#b9c7e0",
+              "on-tertiary-fixed-variant": "#00513b",
+              "inverse-primary": "#bec6e0",
+              "on-tertiary-container": "#479175",
+              "primary": "#000000",
+              "on-tertiary-fixed": "#002116",
+              "on-error": "#ffffff",
+              "on-primary-fixed": "#131b2e",
+              "on-primary-container": "#7c839b",
+              "surface-container-highest": "#e0e3e5",
+              "primary-container": "#131b2e",
+              "tertiary-container": "#002116",
+              "primary-fixed-dim": "#bec6e0",
+              "on-background": "#191c1e",
+              "surface-tint": "#565e74",
+              "surface-container-low": "#f2f4f6"
+            },
+            fontFamily: {
+              "headline": ["Newsreader"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.8);
+      }
+      .hero-gradient {
+        background: linear-gradient(135deg, #f7f9fb 0%, #eceef0 100%);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-tertiary-fixed selection:text-on-tertiary-fixed">
+<!-- TopAppBar -->
+<header class="bg-[#f7f9fb] dark:bg-[#0F172A] flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50 transition-colors duration-400">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#000000] dark:text-white cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-full transition-colors duration-400">menu</span>
+<span class="text-2xl font-semibold tracking-tight text-[#000000] dark:text-white font-serif">QuickFix</span>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-black dark:hover:text-white transition-colors duration-400" href="#">Services</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:text-black dark:hover:text-white transition-colors duration-400" href="#">History</a>
+<a class="text-[#000000] dark:text-white font-bold" href="#">Book</a>
+</nav>
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar of a professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLnxpgUFBEEZThiY9TDXkDw8vl9KUikjLvNbvA0iHYm4Z_wpMw-jd3PDF3ZtuL-cmCZCKOgFnBIIjt7OEbvTOjg4S46XPI3Ax4DK67fozv7JHmw7il0VAI9CnGj_UvBWCUbjymO9vDXMwk8Hw_FmMkGHMnzt8-eQT6dNu6rsaYYr44m9Pwm_GZezCjXgXnsTOh1MZmeCI3vudinDkv8R8d5rlNGo4ck-pV0Oxv8CZObIpxEdFnhx-XjZlABHHyL6VBCeUheqFwbbaU"/>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+<!-- Hero Section / Success Message -->
+<section class="mb-16 mt-8 md:mt-16 flex flex-col md:flex-row gap-12 items-start justify-between">
+<div class="max-w-2xl">
+<div class="inline-flex items-center gap-3 bg-tertiary-fixed px-4 py-1.5 rounded-full mb-8">
+<span class="material-symbols-outlined text-on-tertiary-fixed text-sm" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-bold font-label uppercase tracking-widest text-on-tertiary-fixed">Booking Confirmed</span>
+</div>
+<h1 class="font-headline text-5xl md:text-7xl leading-tight mb-6">Your concierge service is <span class="italic">on the way.</span></h1>
+<p class="text-on-surface-variant text-lg max-w-lg leading-relaxed">We've secured your appointment. A certified specialist will arrive at your preferred location in Bengaluru shortly.</p>
+</div>
+<div class="relative w-full md:w-1/3 aspect-[4/5] overflow-hidden rounded-xl bg-surface-container-low group">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" data-alt="Close up of a luxury car windshield with reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxy--ptBrMLF6Td1EpYu2pWLUSXcYPpA4r4-qf_9gVvXwuA5oCsLSu1iI2fZnanUic4ih6ScFu77uX_DN-pqEgjw6fZrd6ZUil3USl1UPtgHrWR0QH5ahl7YaQAuI1HyMpFhBwZlhSCkIgffjctiEEzBm-BmJ2DqtW55f_-gqbmKvx_Tux--bY_kAsHDH_ayb5uhTTy0r1WZzKkZMlL1kapH3Io77uLVd_jHMhRz8OpZvWqdLp139nhv4I3F4ZNylbJjJjvPXAaApQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute bottom-6 left-6 text-white">
+<p class="text-xs uppercase tracking-[0.2em] font-medium opacity-80 mb-1">Estimated Arrival</p>
+<p class="font-headline text-2xl italic">Tomorrow, 10:00 AM</p>
+</div>
+</div>
+</section>
+<!-- Bento Grid Summary -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+<!-- Vehicle Card -->
+<div class="md:col-span-2 bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between min-h-[240px]">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Vehicle Identity</p>
+<h2 class="font-headline text-4xl italic mb-2">Mercedes-Benz GLE</h2>
+<p class="text-on-surface-variant">Class-leading SUVs demand precision care.</p>
+</div>
+<span class="material-symbols-outlined text-4xl text-surface-container-high">directions_car</span>
+</div>
+<div class="flex gap-8 mt-8">
+<div class="bg-surface-container-low px-4 py-2 rounded-lg">
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1">License Plate</span>
+<span class="font-bold text-sm">KA 01 MG 2024</span>
+</div>
+<div class="bg-surface-container-low px-4 py-2 rounded-lg">
+<span class="block text-[10px] uppercase tracking-tighter text-outline mb-1">Color</span>
+<span class="font-bold text-sm">Obsidian Black</span>
+</div>
+</div>
+</div>
+<!-- Price Quote Card -->
+<div class="bg-primary-container p-8 rounded-xl flex flex-col justify-between text-white">
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-on-primary-container mb-4">Service Investment</p>
+<h3 class="text-5xl font-headline font-light">₹24,500</h3>
+<p class="text-on-primary-container text-sm mt-4">Inclusive of door-step concierge fee, premium glass, and labor taxes.</p>
+</div>
+<div class="flex items-center gap-3 text-tertiary-fixed mt-6">
+<span class="material-symbols-outlined text-sm">verified</span>
+<span class="text-xs font-bold uppercase tracking-wider">Fixed Price Guarantee</span>
+</div>
+</div>
+<!-- Service Details -->
+<div class="bg-surface-container-low p-8 rounded-xl">
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6">Service Type</p>
+<div class="flex items-start gap-4 mb-8">
+<div class="bg-tertiary-fixed-dim/20 p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary">build</span>
+</div>
+<div>
+<h4 class="font-bold text-lg leading-tight">Front Windshield Replacement</h4>
+<p class="text-sm text-on-surface-variant mt-1">OEM Specification Glass Installation</p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-sm text-tertiary-fixed-dim">check</span>
+<span class="text-sm">Lifetime Leakage Warranty</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-sm text-tertiary-fixed-dim">check</span>
+<span class="text-sm">ADAS Recalibration</span>
+</div>
+</div>
+</div>
+<!-- Location Card -->
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col">
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6">Destination</p>
+<div class="flex items-start gap-4 mb-6">
+<div class="bg-primary-container/10 p-3 rounded-xl">
+<span class="material-symbols-outlined text-primary">location_on</span>
+</div>
+<div>
+<h4 class="font-bold text-lg leading-tight">Home / Office</h4>
+<p class="text-sm text-on-surface-variant mt-1 leading-relaxed">Indiranagar 100ft Road,<br/>Bengaluru, Karnataka 560038</p>
+</div>
+</div>
+<div class="mt-auto pt-4 border-t border-outline-variant/20">
+<a class="text-xs font-bold uppercase tracking-widest text-primary hover:underline flex items-center gap-2" href="#">
+                        View on Map <span class="material-symbols-outlined text-sm">arrow_outward</span>
+</a>
+</div>
+</div>
+<!-- Support & Next Steps -->
+<div class="bg-surface-container-lowest p-8 rounded-xl flex flex-col justify-between border-l-4 border-tertiary-fixed">
+<div>
+<p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-6">Concierge Support</p>
+<p class="text-sm leading-relaxed mb-6">Your dedicated agent, <span class="font-bold">Arjun K.</span>, has been assigned to oversee this replacement.</p>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container rounded-full p-2">
+<span class="material-symbols-outlined">call</span>
+</div>
+<span class="font-bold text-lg">+91 80 4455 2200</span>
+</div>
+</div>
+<button class="mt-8 bg-primary text-white w-full py-4 rounded-lg font-label uppercase text-xs font-bold tracking-[0.2em] hover:bg-primary-container transition-all duration-400">
+                    Return to Dashboard
+                </button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#f2f4f6] dark:bg-[#131b2e] w-full flex flex-col items-center gap-4 py-12 px-6 mt-auto">
+<div class="text-lg font-serif italic text-slate-900 dark:text-white">QuickFix Windshields</div>
+<div class="flex gap-8">
+<a class="text-slate-500 dark:text-slate-400 text-xs tracking-normal hover:text-black dark:hover:text-white transition-colors duration-400" href="#">Privacy Policy</a>
+<a class="text-slate-500 dark:text-slate-400 text-xs tracking-normal hover:text-black dark:hover:text-white transition-colors duration-400" href="#">Terms of Service</a>
+<a class="text-slate-500 dark:text-slate-400 text-xs tracking-normal hover:text-black dark:hover:text-white transition-colors duration-400" href="#">Support</a>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-xs tracking-normal opacity-60">© 2024 QuickFix Windshields. A Concierge Service.</p>
+</footer>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-[#131b2e]/80 backdrop-blur-xl shadow-[0_-4px_40px_-10px_rgba(0,0,0,0.06)] rounded-t-3xl">
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-2 hover:text-primary dark:hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+<span class="text-[11px] font-medium Manrope uppercase tracking-wider mt-1">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#000000] dark:text-[#a6f2d1] bg-[#f2f4f6] dark:bg-[#1e293b] rounded-xl px-4 py-2 scale-95 transition-transform duration-400" href="#">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-[11px] font-medium Manrope uppercase tracking-wider mt-1">Book</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-2 hover:text-primary dark:hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="text-[11px] font-medium Manrope uppercase tracking-wider mt-1">History</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-2 hover:text-primary dark:hover:text-white" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[11px] font-medium Manrope uppercase tracking-wider mt-1">Account</span>
+</a>
+</nav>
+</body></html>

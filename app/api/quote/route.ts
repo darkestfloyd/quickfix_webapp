@@ -1,8 +1,10 @@
 /**
  * /api/quote
  *
- * GET  — returns full vehicle list (used by VehicleStep to populate selects)
+ * GET  — returns full vehicle list including prices (used by VehicleStep)
  *         Response: { vehicles: VehicleOption[], grouped: Record<make, {year,model}[]> }
+ *         Cached: public, max-age=3600 — vehicle list is seeded/static data.
+ *         currentPrice is included so the client can show quotes with NO extra POST call.
  *
  * POST — returns INR price for a specific vehicle (rate-limited: 5 req/IP/60s)
  *         Body:     { year: number, make: string, model: string }
@@ -96,23 +98,26 @@ export async function POST(req: NextRequest) {
   });
 }
 
-// Also support GET for pre-fetching vehicle list for cascading selects
+// GET — vehicle list with prices embedded so the client can show quotes instantly
 export async function GET() {
   const vehicles = await db
     .select({
       year: vehiclePricing.year,
       make: vehiclePricing.make,
       model: vehiclePricing.model,
+      currentPrice: vehiclePricing.currentPrice,
     })
     .from(vehiclePricing)
     .orderBy(vehiclePricing.make, vehiclePricing.model);
 
-  // Group by make for easier use in the UI
   const grouped: Record<string, { year: number; model: string }[]> = {};
   for (const v of vehicles) {
     if (!grouped[v.make]) grouped[v.make] = [];
     grouped[v.make].push({ year: v.year, model: v.model });
   }
 
-  return NextResponse.json({ vehicles, grouped });
+  return NextResponse.json(
+    { vehicles, grouped },
+    { headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400" } }
+  );
 }

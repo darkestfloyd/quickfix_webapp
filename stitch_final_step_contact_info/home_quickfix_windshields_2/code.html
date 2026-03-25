@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>QuickFix Windshields - Expert Service</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;500;600;700&amp;family=Manrope:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-low": "#f2f4f6",
+                        "background": "#f7f9fb",
+                        "outline": "#76777d",
+                        "on-tertiary-fixed-variant": "#00513b",
+                        "secondary-fixed": "#d5e3fd",
+                        "secondary-container": "#d5e3fd",
+                        "surface-bright": "#f7f9fb",
+                        "secondary": "#515f74",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#479175",
+                        "surface-variant": "#e0e3e5",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "primary-container": "#131b2e",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-fixed": "#dae2fd",
+                        "tertiary-container": "#002116",
+                        "surface": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#002116",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "on-surface-variant": "#45464d",
+                        "inverse-primary": "#bec6e0",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary-fixed": "#a6f2d1",
+                        "on-primary-container": "#7c839b",
+                        "primary": "#000000",
+                        "on-surface": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary-fixed-dim": "#8bd6b6",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-container": "#57657b",
+                        "surface-container": "#eceef0",
+                        "error-container": "#ffdad6",
+                        "on-background": "#191c1e",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary": "#000000",
+                        "surface-tint": "#565e74",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2d3133",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "inverse-on-surface": "#eff1f3"
+                    },
+                    fontFamily: {
+                        "headline": ["Newsreader", "serif"],
+                        "body": ["Manrope", "sans-serif"],
+                        "label": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-background selection:bg-tertiary-fixed">
+<header class="sticky top-0 z-50 glass-nav border-b border-outline-variant/20 px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">directions_car</span>
+<h1 class="font-headline text-xl font-bold tracking-tight text-primary">QuickFix Windshields</h1>
+</div>
+<button class="size-10 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface">menu</span>
+</button>
+</header>
+<main class="pb-24">
+<!-- Hero Section -->
+<section class="relative px-6 pt-12 pb-8 overflow-hidden">
+<div class="relative z-10">
+<span class="text-xs font-bold tracking-[0.2em] uppercase text-outline mb-4 block">Premium Auto Glass</span>
+<h2 class="font-headline text-5xl leading-tight mb-6">Restore your <span class="italic">clarity</span>.</h2>
+<p class="text-secondary max-w-[80%] mb-8 leading-relaxed">Luxury-grade windshield repair and replacement at your doorstep. Experience the Expert Service difference.</p>
+<button class="bg-primary text-on-primary px-8 py-4 rounded-lg font-bold tracking-wider text-sm flex items-center gap-3 shadow-xl">
+                    BOOK NOW <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="absolute -right-12 top-24 w-64 h-64 bg-tertiary-fixed opacity-20 rounded-full blur-3xl"></div>
+</section>
+<!-- Service Flow -->
+<section class="px-4 space-y-12 mt-8">
+<!-- Step 1: Expert Service Selection -->
+<div>
+<div class="flex items-baseline justify-between mb-6">
+<h3 class="font-headline text-2xl">Expert Service</h3>
+<span class="text-xs font-bold text-tertiary-fixed-dim bg-tertiary-container px-2 py-1">STEP 01</span>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="p-5 rounded-xl bg-surface-container-lowest border border-outline-variant/10 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-surface-container-low flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">build</span>
+</div>
+<div>
+<h4 class="font-bold text-sm">Windshield Replacement</h4>
+<p class="text-xs text-secondary">Starting from ₹4,500</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="p-5 rounded-xl bg-surface-container-low border border-transparent flex items-center justify-between opacity-70">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">healing</span>
+</div>
+<div>
+<h4 class="font-bold text-sm">Chip &amp; Crack Repair</h4>
+<p class="text-xs text-secondary">Starting from ₹1,200</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">radio_button_unchecked</span>
+</div>
+</div>
+</div>
+<!-- Step 2: Location Selection -->
+<div>
+<div class="flex items-baseline justify-between mb-6">
+<h3 class="font-headline text-2xl">Choice of Location</h3>
+<span class="text-xs font-bold text-outline bg-surface-container-high px-2 py-1">STEP 02</span>
+</div>
+<div class="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-4 shadow-lg grayscale">
+<img class="w-full h-full object-cover opacity-80" data-alt="Modern minimalist city map of Mumbai" data-location="Mumbai" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1IsEsMPdlGPMvUOSfMlboOGLuWdE0A8sRpFzYSSAWniC2IKfuYgIGAF2OETPAF5LW-OpWiq0k7JzJeLFDvvu1-TlNsTzh7_bsdXxiVAYAdySSGrlx9D7T0A3ydMIE91EkVvdQHLogYqZK8JA1j5HncHTohxCS9sPZFkJOKSoSZ1gxKrNQenSmMz2H-7OMD_jsNPAGoO4_s1piEbtWZ0MFu7SR8girMEzSPNtEv82YM10Qv4zSAY1US2rp0qu9VJYCW0s9SCQ_0Thh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+<div class="size-6 bg-primary rounded-full border-4 border-white animate-pulse"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-1 rounded-full flex border border-outline-variant/20">
+<button class="flex-1 py-3 px-4 rounded-full bg-primary text-on-primary text-xs font-bold tracking-tight">DOORSTEP</button>
+<button class="flex-1 py-3 px-4 rounded-full text-secondary text-xs font-bold tracking-tight">SERVICE CENTER</button>
+</div>
+</div>
+<!-- Step 3: Time Selection -->
+<div>
+<div class="flex items-baseline justify-between mb-6">
+<h3 class="font-headline text-2xl">Preferred Time</h3>
+<span class="text-xs font-bold text-outline bg-surface-container-high px-2 py-1">STEP 03</span>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-4 px-2 -mx-2">
+<div class="flex-shrink-0 w-24 p-4 rounded-2xl bg-primary text-on-primary flex flex-col items-center gap-1 shadow-md">
+<span class="text-[10px] uppercase font-bold opacity-60">Mon</span>
+<span class="text-xl font-bold font-headline">22</span>
+<span class="text-[10px] uppercase font-bold">Oct</span>
+</div>
+<div class="flex-shrink-0 w-24 p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/10 flex flex-col items-center gap-1">
+<span class="text-[10px] uppercase font-bold text-outline">Tue</span>
+<span class="text-xl font-bold font-headline">23</span>
+<span class="text-[10px] uppercase font-bold text-outline">Oct</span>
+</div>
+<div class="flex-shrink-0 w-24 p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/10 flex flex-col items-center gap-1">
+<span class="text-[10px] uppercase font-bold text-outline">Wed</span>
+<span class="text-xl font-bold font-headline">24</span>
+<span class="text-[10px] uppercase font-bold text-outline">Oct</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-3 mt-4">
+<button class="py-3 border border-outline-variant/30 rounded-lg text-xs font-bold">09:00 AM</button>
+<button class="py-3 bg-surface-container-low rounded-lg text-xs font-bold border border-transparent">11:30 AM</button>
+<button class="py-3 bg-surface-container-low rounded-lg text-xs font-bold border border-transparent">02:00 PM</button>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="mt-20 px-4">
+<h3 class="font-headline text-3xl mb-8 text-center italic">The Guest Journal</h3>
+<div class="space-y-6">
+<!-- Testimonial 1 -->
+<div class="p-8 rounded-3xl bg-surface-container-low/50 relative">
+<span class="material-symbols-outlined absolute top-6 right-8 text-primary/10 scale-[3]">format_quote</span>
+<div class="flex gap-1 mb-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body text-on-surface leading-relaxed mb-6 italic">"The doorstep service was impeccable. They handled my vehicle with such precision that it felt like it just rolled out of the showroom."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-[1px] bg-primary"></div>
+<div>
+<p class="font-bold text-sm">Arjun Mehta</p>
+<p class="text-xs text-secondary">Mercedes-Benz E-Class</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="p-8 rounded-3xl bg-surface-container-lowest border border-outline-variant/10 shadow-sm relative">
+<div class="flex gap-1 mb-4">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body text-on-surface leading-relaxed mb-6 italic">"Expert Service is the only way to describe it. Professional technicians who actually understand luxury auto-glass requirements."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-[1px] bg-primary"></div>
+<div>
+<p class="font-bold text-sm">Priya Sharma</p>
+<p class="text-xs text-secondary">BMW X5</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="mt-20 px-4 pb-12">
+<div class="bg-primary-container p-10 rounded-[2rem] text-center overflow-hidden relative">
+<div class="relative z-10">
+<h3 class="font-headline text-3xl text-on-primary mb-4">Ready for clarity?</h3>
+<p class="text-on-primary-container mb-8 text-sm">Join 5,000+ luxury car owners who trust QuickFix.</p>
+<button class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-4 rounded-xl tracking-widest text-xs">RESERVE EXPERT SERVICE</button>
+</div>
+<div class="absolute -bottom-20 -left-20 w-64 h-64 bg-tertiary-fixed/10 rounded-full blur-3xl"></div>
+</div>
+</section>
+</main>
+<!-- Shared Bottom Nav -->
+<nav class="fixed bottom-0 left-0 right-0 glass-nav border-t border-outline-variant/20 px-6 pb-6 pt-3 flex justify-between items-center z-50">
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="text-primary flex h-8 items-center justify-center" data-icon="house" data-size="24px" data-weight="fill">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">house</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-primary">Home</p>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="text-outline flex h-8 items-center justify-center" data-icon="wrench" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">tools_wrench</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Services</p>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="text-outline flex h-8 items-center justify-center" data-icon="calendar" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Bookings</p>
+</a>
+<a class="flex flex-col items-center gap-1 group" href="#">
+<div class="text-outline flex h-8 items-center justify-center" data-icon="user" data-size="24px" data-weight="regular">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-[10px] font-bold uppercase tracking-widest text-outline">Profile</p>
+</a>
+</nav>
+</body></html>

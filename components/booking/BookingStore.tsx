@@ -23,7 +23,7 @@ import { getStoredAttribution } from "@/lib/attribution";
 
 type Action =
   | { type: "SET_STEP"; step: BookingState["step"] }
-  | { type: "SET_VEHICLE"; year: number; make: string; model: string; quoteAmount: number }
+  | { type: "SET_VEHICLE"; year: number; make: string; model: string; quoteAmount: number; glassType: "front" | "rear" }
   | {
       type: "SET_LOCATION";
       servicePin: string;
@@ -51,6 +51,7 @@ function reducer(state: BookingState, action: Action): BookingState {
         vehicleMake: action.make,
         vehicleModel: action.model,
         quoteAmount: action.quoteAmount,
+        glassType: action.glassType,
       };
     case "SET_LOCATION":
       return {

@@ -70,10 +70,9 @@ export function VehicleStep() {
 
   const allMakes = Array.from(new Set(vehicles.map((v) => v.make))).sort();
   const otherMakes = allMakes.filter((m) => !GRID_MAKES.includes(m));
-  const models = vehicles
-    .filter((v) => v.make === selectedMake)
-    .map((v) => v.model)
-    .sort();
+  const models = Array.from(new Set(
+    vehicles.filter((v) => v.make === selectedMake).map((v) => v.model)
+  )).sort();
 
   // Instant client-side price lookup — no network call needed
   useEffect(() => {

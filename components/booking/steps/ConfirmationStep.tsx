@@ -42,7 +42,7 @@ export function ConfirmationStep() {
       vehicleModel: state.vehicleModel,
       quoteAmount: state.quoteAmount,
       servicePin: state.servicePin,
-      serviceCity: state.serviceCity ?? "",
+      serviceCity: state.serviceCity,
       serviceAddress: state.serviceAddress,
       appointmentDate: state.appointmentDate,
       appointmentTime: state.appointmentTime,

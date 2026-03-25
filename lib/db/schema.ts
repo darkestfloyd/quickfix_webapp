@@ -27,20 +27,25 @@ import {
   uuid,
   jsonb,
   pgEnum,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 export const markupTypeEnum = pgEnum("markup_type", ["percentage", "flat"]);
 export const leadStatusEnum = pgEnum("lead_status", ["pending", "confirmed", "cancelled"]);
 
-export const vehiclePricing = pgTable("vehicle_pricing", {
-  id: serial("id").primaryKey(),
-  year: integer("year").notNull(),
-  make: varchar("make", { length: 100 }).notNull(),
-  model: varchar("model", { length: 100 }).notNull(),
-  basePrice: numeric("base_price", { precision: 10, scale: 2 }).notNull(),
-  currentPrice: numeric("current_price", { precision: 10, scale: 2 }).notNull(),
-});
+export const vehiclePricing = pgTable(
+  "vehicle_pricing",
+  {
+    id: serial("id").primaryKey(),
+    year: integer("year").notNull(),
+    make: varchar("make", { length: 100 }).notNull(),
+    model: varchar("model", { length: 100 }).notNull(),
+    basePrice: numeric("base_price", { precision: 10, scale: 2 }).notNull(),
+    currentPrice: numeric("current_price", { precision: 10, scale: 2 }).notNull(),
+  },
+  (t) => [uniqueIndex("vehicle_pricing_year_make_model_idx").on(t.year, t.make, t.model)]
+);
 
 export const pricingMarkup = pgTable("pricing_markup", {
   id: serial("id").primaryKey(),

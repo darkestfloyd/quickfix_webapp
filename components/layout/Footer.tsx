@@ -7,12 +7,12 @@ export function Footer() {
   return (
     <footer className="border-t border-gray-200 bg-white text-gray-600">
       <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <p className="mb-1 font-serif text-xl font-bold text-black">
               QuickFix <span className="font-normal">Windshields</span>
             </p>
-            <p className="mb-4 text-sm leading-relaxed text-gray-500">
+            <p className="mb-4 max-w-xs text-sm leading-relaxed text-gray-500">
               Premium doorstep windshield repair and replacement. We come to you — at home, office, or wherever you are.
             </p>
             <div className="flex flex-wrap gap-2">
@@ -20,16 +20,6 @@ export function Footer() {
               <span className="rounded border border-gray-200 px-2.5 py-1 text-xs text-gray-500">Credit / Debit Card</span>
               <span className="rounded border border-gray-200 px-2.5 py-1 text-xs text-gray-500">Cash</span>
             </div>
-          </div>
-
-          <div>
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-black">Services</p>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li>Chip Repair</li>
-              <li>Crack Repair</li>
-              <li>Full Replacement</li>
-              <li>ADAS Recalibration</li>
-            </ul>
           </div>
 
           <div>

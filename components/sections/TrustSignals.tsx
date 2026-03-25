@@ -2,26 +2,26 @@ import { Check, Shield, Clock, Star, Users, Award } from "lucide-react";
 
 const FEATURES = [
   {
-    title: "Lifetime Leak Warranty",
-    description: "Every installation is sealed and guaranteed against leaks for the life of the glass.",
+    title: "1-Year Bubble Free Warranty",
+    description: "Every installation guaranteed bubble free for 1 year.",
   },
   {
     title: "Priority Doorstep Service",
-    description: "We come to your home, office, or anywhere across our service cities — same or next day.",
+    description: "We come to your home, office, or anywhere you want.",
   },
   {
-    title: "Cashless Insurance Claims",
+    title: "Insurance Claims (Coming soon!)",
     description: "We work directly with most insurers. Zero paperwork, zero advance payment for covered repairs.",
   },
 ];
 
 const BADGES = [
-  { icon: Shield, label: "1-Year Warranty", sub: "On all glass & labour" },
+  { icon: Shield, label: "1-Year Warranty", sub: "On all glass" },
   { icon: Award, label: "OEM-Grade Glass", sub: "Factory-spec quality" },
   { icon: Clock, label: "90-Min Service", sub: "Fast, on-site completion" },
   { icon: Star, label: "4.9 / 5 Rating", sub: "Average customer rating" },
   { icon: Users, label: "Certified Techs", sub: "Background verified" },
-  { icon: Check, label: "500+ Cars Served", sub: "Across 6 major cities" },
+  { icon: Check, label: "500+ Cars Served", sub: "Across Bengaluru" },
 ];
 
 export function TrustSignals() {

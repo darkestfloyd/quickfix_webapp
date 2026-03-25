@@ -2,28 +2,24 @@ import { Wrench, Zap, Car, Eye } from "lucide-react";
 
 const SERVICES = [
   {
-    icon: Zap,
-    title: "Chip Repair",
-    description: "Small chips and bullseye cracks repaired in under 30 minutes. Invisible results, prevents further spreading.",
-    price: "From ₹1,500",
-  },
-  {
-    icon: Wrench,
-    title: "Crack Repair",
-    description: "Long cracks up to 30cm repaired using advanced resin injection. Restores structural integrity.",
-    price: "From ₹2,500",
-  },
-  {
     icon: Car,
     title: "Full Replacement",
     description: "Complete windshield replacement using OEM or OEM-equivalent glass. Includes adhesive and curing.",
-    price: "From ₹3,500",
   },
   {
     icon: Eye,
     title: "ADAS Recalibration",
     description: "Camera and sensor recalibration after glass replacement. Essential for lane assist and collision warning.",
-    price: "From ₹4,000",
+  },
+  {
+    icon: Zap,
+    title: "Chip Repair",
+    description: "Small chips and bullseye cracks repaired in under 30 minutes. Invisible results, prevents further spreading.",
+  },
+  {
+    icon: Wrench,
+    title: "Crack Repair",
+    description: "Long cracks up to 30cm repaired using advanced resin injection. Restores structural integrity.",
   },
 ];
 
@@ -56,8 +52,7 @@ export function Services() {
                   <Icon className="h-5 w-5 text-teal-600" />
                 </div>
                 <h3 className="mb-2 font-bold text-black">{service.title}</h3>
-                <p className="mb-4 flex-1 text-sm leading-relaxed text-gray-500">{service.description}</p>
-                <p className="text-sm font-semibold text-black">{service.price}</p>
+                <p className="text-sm leading-relaxed text-gray-500">{service.description}</p>
               </div>
             );
           })}

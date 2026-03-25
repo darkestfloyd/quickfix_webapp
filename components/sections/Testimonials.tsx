@@ -68,7 +68,7 @@ export function Testimonials() {
                 <Initials name={t.name} />
                 <div>
                   <p className="text-sm font-semibold text-black">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.title} · {t.car}</p>
+                  <p className="text-xs text-gray-500">{t.car}</p>
                 </div>
               </div>
             </div>

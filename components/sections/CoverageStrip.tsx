@@ -18,13 +18,6 @@ export function CoverageStrip() {
               Now Live in{" "}
               <em className="font-bold italic text-gray-400">Bengaluru</em>
             </h2>
-            <p className="text-sm text-gray-400">
-              All PIN codes starting with <span className="font-semibold text-white">560</span> are covered —
-              Indiranagar, Koramangala, Whitefield, Jayanagar and everywhere in between.
-            </p>
-            <p className="mt-1.5 text-xs text-gray-600">
-              Expanding to other cities soon. Enter your PIN code when booking to check availability.
-            </p>
           </div>
 
           <Button asChild variant="black" size="lg" className="shrink-0">

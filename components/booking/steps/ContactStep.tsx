@@ -152,11 +152,11 @@ export function ContactStep() {
         </div>
 
         <Button type="submit" variant="black" size="lg" className="w-full">
-          CONFIRM QUOTE REQUEST →
+          CONFIRM →
         </Button>
 
         <p className="text-xs leading-relaxed text-gray-400">
-          By confirming, you agree to be contacted by a QuickFix technician coordinator. All service personnel are background-verified.
+          By confirming, you agree to be contacted by a QuickFix Windshields technician coordinator. All service personnel are background-verified.
         </p>
       </form>
 

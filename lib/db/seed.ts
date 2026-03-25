@@ -10,6 +10,7 @@
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { vehiclePricing, pricingMarkup, servicePinCoverage, availabilitySlots } from "./schema";
+import { istDateStr } from "../utils";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
@@ -61,28 +62,32 @@ const PIN_CODES = [
   { pinCode: "560100", city: "Bengaluru", state: "Karnataka", surcharge: 500 },
 ];
 
-// Generates Mon–Sat slots for the next N days, 8am–6pm in 2-hour windows
-// To change hours: edit startHours array below
-// To change slot duration: edit both startHours and slotEndTime calculation
-// To extend coverage: change the loop limit (currently 30 days)
+// Generates Mon–Sat slots for the next 30 days — 3 fixed windows per day:
+//   09:00–12:00  |  12:00–14:00  |  14:00–17:00
+// To extend coverage: change the loop limit below (currently 30 days)
+const FIXED_SLOTS = [
+  { start: "09:00:00", end: "12:00:00" },
+  { start: "12:00:00", end: "14:00:00" },
+  { start: "14:00:00", end: "17:00:00" },
+];
+
 function generateSlots() {
-  const slots: { slotDate: string; slotTime: string; slotEndTime: string }[] = [];
+  const slots: { slotDate: string; slotTime: string; slotEndTime: string; maxBookings: number }[] = [];
   const today = new Date();
 
   for (let d = 1; d <= 30; d++) {
-    const date = new Date(today);
-    date.setDate(today.getDate() + d);
-    // Skip Sundays (0)
-    if (date.getDay() === 0) continue;
-
-    const dateStr = date.toISOString().split("T")[0];
-    // 8am–6pm, 2-hour slots: 08:00, 10:00, 12:00, 14:00, 16:00
-    const startHours = [8, 10, 12, 14, 16];
-    for (const hour of startHours) {
+    // Add d days in milliseconds; use istDateStr to format in IST
+    const date = new Date(today.getTime() + d * 86_400_000);
+    const dateStr = istDateStr(date);
+    // Skip Sundays in IST
+    const dow = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", weekday: "short" }).format(date);
+    if (dow === "Sun") continue;
+    for (const slot of FIXED_SLOTS) {
       slots.push({
         slotDate: dateStr,
-        slotTime: `${String(hour).padStart(2, "0")}:00:00`,
-        slotEndTime: `${String(hour + 2).padStart(2, "0")}:00:00`,
+        slotTime: slot.start,
+        slotEndTime: slot.end,
+        maxBookings: 1,
       });
     }
   }
@@ -133,7 +138,9 @@ async function main() {
   const slots = generateSlots();
   // Insert in batches of 50
   for (let i = 0; i < slots.length; i += 50) {
-    await db.insert(availabilitySlots).values(slots.slice(i, i + 50)).onConflictDoNothing();
+    await db.insert(availabilitySlots).values(
+      slots.slice(i, i + 50).map((s) => ({ ...s, maxBookings: s.maxBookings }))
+    ).onConflictDoNothing();
   }
 
   console.log(`Seeded: ${vehicleRows.length} vehicles, ${PIN_CODES.length} PIN codes, ${slots.length} slots.`);

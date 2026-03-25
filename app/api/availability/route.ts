@@ -20,7 +20,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { availabilitySlots, servicePinCoverage } from "@/lib/db/schema";
-import { eq, and, gte, lte, lt, sql } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
+import { istTomorrow, nextISTWeekdays } from "@/lib/utils";
 
 function formatTimeLabel(time: string, endTime: string): string {
   const fmt = (t: string) => {
@@ -62,32 +63,35 @@ export async function GET(req: NextRequest) {
   const state = coverage?.state ?? "Karnataka";
   const surcharge = coverage ? parseFloat(coverage.surcharge) : 0;
 
-  // Return slots for next 7 days with availability
-  const today = new Date();
-  const todayStr = today.toISOString().split("T")[0];
-  const futureDate = new Date(today);
-  futureDate.setDate(today.getDate() + 7);
-  const futureDateStr = futureDate.toISOString().split("T")[0];
+  // Show next 4 weekdays (Mon–Sat) starting from tomorrow in IST — no same-day bookings
+  const tomorrowStr = istTomorrow();
+  const activeDates = nextISTWeekdays(tomorrowStr, 4);
+  const lastDateStr = activeDates[activeDates.length - 1];
 
+  // Return ALL slots for the window (booked + available) so UI can grey out booked ones
   const slots = await db
     .select()
     .from(availabilitySlots)
     .where(
       and(
-        gte(availabilitySlots.slotDate, todayStr),
-        lte(availabilitySlots.slotDate, futureDateStr),
-        lt(availabilitySlots.bookedCount, availabilitySlots.maxBookings)
+        gte(availabilitySlots.slotDate, tomorrowStr),
+        lte(availabilitySlots.slotDate, lastDateStr)
       )
     )
     .orderBy(availabilitySlots.slotDate, availabilitySlots.slotTime);
 
-  const formattedSlots = slots.map((s) => ({
-    id: s.id,
-    date: s.slotDate,
-    time: s.slotTime,
-    endTime: s.slotEndTime,
-    label: formatTimeLabel(s.slotTime, s.slotEndTime),
-  }));
+  // Only include slots from the 4 active dates (excludes any Sundays in the range)
+  const activeDateSet = new Set(activeDates);
+  const formattedSlots = slots
+    .filter((s) => activeDateSet.has(s.slotDate))
+    .map((s) => ({
+      id: s.id,
+      date: s.slotDate,
+      time: s.slotTime,
+      endTime: s.slotEndTime,
+      label: formatTimeLabel(s.slotTime, s.slotEndTime),
+      available: s.bookedCount < s.maxBookings,
+    }));
 
   return NextResponse.json({
     covered: true,

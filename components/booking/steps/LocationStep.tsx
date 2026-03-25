@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useBooking } from "../BookingStore";
 import { trackStepComplete } from "@/lib/meta-events";
-import { Loader2, MapPin, AlertCircle, CheckCircle2, ChevronLeft, ChevronRight, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Loader2, MapPin, AlertCircle, CheckCircle2, Check } from "lucide-react";
+import { cn, istTomorrow } from "@/lib/utils";
 import type { AvailabilitySlot } from "@/types";
 
 const schema = z.object({
@@ -36,6 +36,16 @@ function getMonthLabel(dates: string[]): string {
   if (!dates.length) return "";
   const d = new Date(dates[0] + "T00:00:00");
   return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// Use shared IST utility so client and server agree on "tomorrow"
+const getTomorrowStr = istTomorrow;
+
+function isSlotBlocked(slot: AvailabilitySlot): boolean {
+  if (!slot.available) return true;
+  // Tomorrow's first slot (9am) is always blocked
+  if (slot.date === getTomorrowStr() && slot.time.startsWith("09")) return true;
+  return false;
 }
 
 export function LocationStep() {
@@ -177,16 +187,8 @@ export function LocationStep() {
           </p>
 
           {/* Month header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <span className="text-sm font-semibold text-black">{monthLabel}</span>
-            <div className="flex gap-1">
-              <button type="button" className="rounded p-1 text-gray-400 hover:text-black">
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button type="button" className="rounded p-1 text-gray-400 hover:text-black">
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
           </div>
 
           {/* Date strip */}
@@ -224,33 +226,32 @@ export function LocationStep() {
                 Available Slots
               </p>
               <div className="grid grid-cols-2 gap-2">
-                {slots[selectedDate].map((slot, i) => (
-                  <button
-                    key={slot.id}
-                    type="button"
-                    onClick={() => {
-                      setSelectedSlot(slot);
-                      setValue("slotId", slot.id);
-                    }}
-                    className={cn(
-                      "flex items-center justify-between rounded-lg px-3 py-3 text-left text-sm transition-colors",
-                      selectedSlot?.id === slot.id
-                        ? "bg-black text-white"
-                        : "bg-white text-gray-700 hover:bg-gray-100"
-                    )}
-                  >
-                    <span className="font-medium">{slot.label.split("–")[0].trim()}</span>
-                    {i === 0 && (
-                      <span className={cn(
-                        "text-xs",
-                        selectedSlot?.id === slot.id ? "text-teal-300" : "text-teal-500"
-                      )}>
-                        EARLIEST
-                      </span>
-                    )}
-                    {selectedSlot?.id === slot.id && <Check className="h-3.5 w-3.5" />}
-                  </button>
-                ))}
+                {slots[selectedDate].map((slot) => {
+                  const blocked = isSlotBlocked(slot);
+                  return (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      disabled={blocked}
+                      onClick={() => {
+                        if (blocked) return;
+                        setSelectedSlot(slot);
+                        setValue("slotId", slot.id);
+                      }}
+                      className={cn(
+                        "flex items-center justify-between rounded-lg px-3 py-3 text-left text-sm transition-colors",
+                        blocked
+                          ? "cursor-not-allowed border border-gray-200 bg-gray-50 opacity-50"
+                          : selectedSlot?.id === slot.id
+                          ? "bg-black text-white"
+                          : "bg-white text-gray-700 hover:bg-gray-100"
+                      )}
+                    >
+                      <span className="font-medium">{slot.label}</span>
+                      {!blocked && selectedSlot?.id === slot.id && <Check className="h-3.5 w-3.5" />}
+                    </button>
+                  );
+                })}
               </div>
               {errors.slotId && <p className="text-xs text-red-500">{errors.slotId.message}</p>}
             </div>

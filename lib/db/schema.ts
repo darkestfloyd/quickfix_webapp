@@ -69,7 +69,7 @@ export const availabilitySlots = pgTable("availability_slots", {
   slotDate: date("slot_date").notNull(),
   slotTime: time("slot_time").notNull(),
   slotEndTime: time("slot_end_time").notNull(),
-  maxBookings: integer("max_bookings").default(2).notNull(),
+  maxBookings: integer("max_bookings").default(1).notNull(),
   bookedCount: integer("booked_count").default(0).notNull(),
 });
 

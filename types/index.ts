@@ -21,9 +21,10 @@ export interface QuoteResponse {
 export interface AvailabilitySlot {
   id: number;
   date: string; // YYYY-MM-DD
-  time: string; // HH:MM
-  endTime: string; // HH:MM
-  label: string; // "9:00 AM – 11:00 AM"
+  time: string; // HH:MM:SS
+  endTime: string; // HH:MM:SS
+  label: string; // "9:00 AM – 12:00 PM"
+  available: boolean; // false = fully booked, render greyed out
 }
 
 export interface LeadRequest {

@@ -15,7 +15,7 @@ import {
 import { useBooking } from "../BookingStore";
 import { trackQuoteView, trackStepComplete } from "@/lib/meta-events";
 import { formatINR, cn } from "@/lib/utils";
-import { Shield, Check } from "lucide-react";
+import { Shield, Check, Ban } from "lucide-react";
 
 const schema = z.object({
   make: z.string().min(1, "Select a make"),
@@ -37,9 +37,9 @@ const YEARS = Array.from({ length: 10 }, (_, i) => 2024 - i);
 // Primary makes shown in grid; others fall through to "Other" selection
 const GRID_MAKES = ["Maruti Suzuki", "Hyundai", "Tata", "Honda", "Toyota"];
 
-const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string }[] = [
+const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string; disabled?: boolean }[] = [
   { value: "front", label: "Front Windshield", sub: "Includes rain sensor calibration" },
-  { value: "rear", label: "Rear / Door Glass", sub: "Tempered safety glass" },
+  { value: "rear", label: "Rear / Door Glass", sub: "Currently unavailable", disabled: true },
 ];
 
 export function VehicleStep() {
@@ -74,16 +74,22 @@ export function VehicleStep() {
     vehicles.filter((v) => v.make === selectedMake).map((v) => v.model)
   )).sort();
 
-  // Instant client-side price lookup — no network call needed
+  // Instant client-side price lookup — only runs once glass type is also selected
+  // Rear/door glass is priced at 80% of the front windshield price
   useEffect(() => {
-    if (!selectedYear || !selectedMake || !selectedModel) return;
+    if (!selectedYear || !selectedMake || !selectedModel || !selectedGlass) {
+      setQuote(null);
+      setQuoteError(null);
+      return;
+    }
 
     const match = vehicles.find(
       (v) => v.make === selectedMake && v.model === selectedModel && v.year === selectedYear
     );
 
     if (match) {
-      const price = parseFloat(match.currentPrice);
+      const basePrice = parseFloat(match.currentPrice);
+      const price = selectedGlass === "rear" ? Math.round(basePrice * 0.8) : basePrice;
       setQuote(price);
       setQuoteError(null);
       trackQuoteView(price);
@@ -91,7 +97,7 @@ export function VehicleStep() {
       setQuote(null);
       setQuoteError("Vehicle not in our price list. We'll contact you with a custom quote.");
     }
-  }, [selectedYear, selectedMake, selectedModel, vehicles]);
+  }, [selectedYear, selectedMake, selectedModel, selectedGlass, vehicles]);
 
   const onSubmit = (data: FormData) => {
     if (!quote && !quoteError) return;
@@ -232,25 +238,39 @@ export function VehicleStep() {
             <button
               key={opt.value}
               type="button"
-              onClick={() => setValue("glassType", opt.value, { shouldValidate: true })}
+              disabled={opt.disabled}
+              onClick={() => !opt.disabled && setValue("glassType", opt.value, { shouldValidate: true })}
               className={cn(
                 "flex items-start gap-3 rounded-lg border p-4 text-left transition-colors",
-                selectedGlass === opt.value
+                opt.disabled
+                  ? "cursor-not-allowed border-gray-200 bg-gray-50"
+                  : selectedGlass === opt.value
                   ? "border-black bg-black text-white"
                   : "border-gray-200 bg-white hover:border-gray-400"
               )}
             >
               <div className={cn(
                 "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
-                selectedGlass === opt.value ? "border-white bg-white" : "border-gray-300"
+                opt.disabled
+                  ? "border-gray-300 bg-gray-100"
+                  : selectedGlass === opt.value ? "border-white bg-white" : "border-gray-300"
               )}>
-                {selectedGlass === opt.value && (
-                  <div className="h-2 w-2 rounded-full bg-black" />
-                )}
+                {opt.disabled
+                  ? <Ban className="h-3 w-3 text-gray-400" />
+                  : selectedGlass === opt.value
+                  ? <div className="h-2 w-2 rounded-full bg-black" />
+                  : null
+                }
               </div>
               <div>
-                <p className="text-sm font-semibold">{opt.label}</p>
-                <p className={cn("text-xs", selectedGlass === opt.value ? "text-gray-300" : "text-gray-500")}>
+                <p className={cn(
+                  "text-sm font-semibold",
+                  opt.disabled ? "text-gray-400" : ""
+                )}>{opt.label}</p>
+                <p className={cn(
+                  "text-xs",
+                  opt.disabled ? "text-gray-400" : selectedGlass === opt.value ? "text-gray-300" : "text-gray-500"
+                )}>
                   {opt.sub}
                 </p>
               </div>
@@ -267,7 +287,7 @@ export function VehicleStep() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Estimated Quote</p>
               <p className="mt-1 font-serif text-4xl font-bold text-black">{formatINR(quote)}</p>
-              <p className="mt-1 text-xs text-gray-500">Includes all materials &amp; labour</p>
+              <p className="mt-1 text-xs text-gray-500">Inclusive of tax and labour, no surprises.</p>
             </div>
             <div className="flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-700">
               <Check className="h-3 w-3" />

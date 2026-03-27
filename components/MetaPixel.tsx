@@ -26,7 +26,10 @@ export function MetaPixel() {
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${PIXEL_ID}');
+            var _fbclid = new URLSearchParams(window.location.search).get('fbclid');
+            var _initData = {};
+            if (_fbclid) { _initData.fbc = 'fb.1.' + Date.now() + '.' + _fbclid; }
+            fbq('init', '${PIXEL_ID}', _initData);
           `,
         }}
       />

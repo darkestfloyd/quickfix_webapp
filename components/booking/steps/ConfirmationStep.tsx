@@ -36,6 +36,7 @@ export function ConfirmationStep() {
 
   useEffect(() => {
     const attribution = getStoredAttribution();
+    const eventId = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     const payload = {
       vehicleYear: state.vehicleYear,
       vehicleMake: state.vehicleMake,
@@ -51,6 +52,7 @@ export function ConfirmationStep() {
       customerPhone: state.customerPhone,
       customerEmail: state.customerEmail,
       sessionId,
+      eventId,
       ...attribution,
     };
 
@@ -64,7 +66,7 @@ export function ConfirmationStep() {
         if (data.success && data.referenceId) {
           setReferenceId(data.referenceId);
           dispatch({ type: "SET_REFERENCE", referenceId: data.referenceId });
-          trackLeadSubmit(state.quoteAmount ?? 0);
+          trackLeadSubmit(state.quoteAmount ?? 0, eventId);
           trackStepComplete(4, "Confirmation");
           fetch("/api/track", {
             method: "POST",

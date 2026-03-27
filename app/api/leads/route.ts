@@ -13,11 +13,16 @@
  * To view submitted leads:
  *   SELECT * FROM lead_requests ORDER BY created_at DESC LIMIT 20;
  */
+import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { leadRequests, availabilitySlots } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
+
+function sha256(value: string): string {
+  return createHash("sha256").update(value.trim().toLowerCase()).digest("hex");
+}
 
 const leadSchema = z.object({
   vehicleYear: z.number().int().min(2000).max(2030),
@@ -41,6 +46,7 @@ const leadSchema = z.object({
   fbclid: z.string().max(255).optional(),
   referrer: z.string().max(1000).optional(),
   sessionId: z.string().max(64).optional(),
+  eventId: z.string().max(64).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -98,6 +104,42 @@ export async function POST(req: NextRequest) {
       .catch(() => {
         // Non-fatal: slot count increment failure doesn't block lead creation
       });
+  }
+
+  // Conversions API — server-side event for improved match quality (bypasses iOS/ad blocker signal loss)
+  const capiPixelId = process.env.META_PIXEL_ID;
+  const capiToken = process.env.META_CAPI_TOKEN;
+  if (capiPixelId && capiToken) {
+    const userData: Record<string, unknown> = {
+      ph: [sha256(data.customerPhone)],
+    };
+    if (data.customerEmail) {
+      userData.em = [sha256(data.customerEmail)];
+    }
+    if (data.fbclid) {
+      userData.fbc = `fb.1.${Date.now()}.${data.fbclid}`;
+    }
+    fetch(
+      `https://graph.facebook.com/v19.0/${capiPixelId}/events?access_token=${capiToken}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data: [{
+            event_name: "Lead",
+            event_time: Math.floor(Date.now() / 1000),
+            event_id: data.eventId ?? lead.id,
+            action_source: "website",
+            event_source_url: "https://www.quickfixwindshields.co/booking",
+            user_data: userData,
+            custom_data: {
+              currency: "INR",
+              value: data.quoteAmount,
+            },
+          }],
+        }),
+      }
+    ).catch(() => {}); // Non-fatal — DB insert already succeeded
   }
 
   return NextResponse.json({ success: true, referenceId: lead.id }, { status: 201 });

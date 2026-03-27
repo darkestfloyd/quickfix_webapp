@@ -15,7 +15,7 @@ export function trackPageView() {
 }
 
 export function trackCTAClick() {
-  fbq("track", "Lead", { content_name: "CTA Click - Get Free Quote" });
+  fbq("track", "InitiateCheckout", { content_name: "CTA Click - Get Free Quote" });
 }
 
 export function trackQuoteView(quoteAmount: number) {
@@ -30,10 +30,11 @@ export function trackStepComplete(step: number, stepName: string) {
   fbq("trackCustom", "BookingStepComplete", { step, stepName });
 }
 
-export function trackLeadSubmit(quoteAmount: number) {
+export function trackLeadSubmit(quoteAmount: number, eventId: string) {
   fbq("track", "Lead", {
     content_name: "Booking Submitted",
     currency: "INR",
     value: quoteAmount,
+    eventID: eventId,
   });
 }

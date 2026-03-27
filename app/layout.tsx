@@ -13,9 +13,9 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "QuickFix Windshields Bengaluru — Doorstep Windshield Repair & Replacement",
+  title: "QuickFix Windshields - Doorstep Windshield Replacement",
   description:
-    "Premium doorstep windshield repair and replacement in Bengaluru. Certified technicians come to your home or office. OEM-grade glass, ADAS recalibration, 1-year warranty. Get a free quote in 60 seconds.",
+    "Premium doorstep windshield repair and replacement. Certified technicians come to your home or office. OEM-grade glass, ADAS recalibration, 1-year warranty. Get a free quote in 60 seconds.",
   keywords: [
     "windshield repair Bengaluru",
     "windshield replacement Bengaluru",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "OEM windshield Bangalore",
   ],
   openGraph: {
-    title: "QuickFix Windshields — Doorstep Service in Bengaluru",
+    title: "QuickFix Windshields - Doorstep Windshield Replacement",
     description:
       "Get your windshield repaired or replaced at your doorstep anywhere in Bengaluru. OEM glass, certified technicians, 1-year warranty.",
     type: "website",
@@ -37,8 +37,8 @@ const localBusinessSchema = {
   "@type": "LocalBusiness",
   name: "QuickFix Windshields",
   description:
-    "Premium doorstep windshield repair and replacement in Bengaluru. Technicians come to your location.",
-  url: process.env.NEXT_PUBLIC_BASE_URL ?? "https://www.quickfixwindshields.co",
+    "Premium doorstep windshield replacement. Technicians come to your location.",
+  url: process.env.NEXT_PUBLIC_BASE_URL ?? "https://quickfixwindshields.co",
   telephone: process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? "+91 98765 43210",
   email: "hello@quickfixwindshields.co",
   areaServed: ["Bengaluru"],

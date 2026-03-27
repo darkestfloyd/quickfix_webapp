@@ -7,9 +7,9 @@ import { Testimonials } from "@/components/sections/Testimonials";
 import { CoverageStrip } from "@/components/sections/CoverageStrip";
 
 export const metadata: Metadata = {
-  title: "QuickFix Auto Glass — Doorstep Windshield Repair & Replacement India",
+  title: "QuickFix Windshields —  Same-Day Doorstep Windshield Replacement",
   description:
-    "Get your car windshield repaired or replaced at your doorstep across Mumbai, Delhi, Bengaluru, Chennai, Hyderabad and Pune. Free quote in 60 seconds. Certified technicians, OEM glass, 1-year warranty.",
+    "Get your car windshield repaired or replaced at your doorstep. Free quote in 60 seconds. Certified technicians, OEM glass, 1-year warranty.",
 };
 
 export default function HomePage() {

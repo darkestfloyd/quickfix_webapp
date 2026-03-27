@@ -1,0 +1,21 @@
+<svg width="120" height="90" viewBox="0 0 100 75" xmlns="http://www.w3.org/2000/svg">
+  <!-- Windshield -->
+  <path d="M5,30 
+           Q10,5 30,2 
+           L70,2 
+           Q90,5 95,30 
+           L85,60 
+           Q50,72 15,60 Z"
+        fill="#d71920"/>
+
+  <!-- Crack -->
+  <path d="M62,5 
+           L55,23 
+           L68,23 
+           L52,44"
+        stroke="white"
+        stroke-width="4.5"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>

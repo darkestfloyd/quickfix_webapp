@@ -3,9 +3,9 @@ import { BookingProvider } from "@/components/booking/BookingStore";
 import { BookingForm } from "@/components/booking/BookingForm";
 
 export const metadata: Metadata = {
-  title: "Get Free Quote — QuickFix Auto Glass",
+  title: "Get Free Quote — QuickFix Windshields",
   description:
-    "Book your doorstep windshield repair or replacement in 3 easy steps. Get an instant quote for your car.",
+    "Book your doorstep windshield replacement in 3 easy steps. Get an instant quote for your car.",
 };
 
 export default function BookingPage() {

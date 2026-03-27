@@ -51,7 +51,7 @@ export function Testimonials() {
         </div>
         <h2 className="mb-12 text-3xl font-bold text-black sm:text-4xl">
           Trusted by{" "}
-          <em className="font-bold italic text-gray-400">India&apos;s Executives</em>
+          <em className="font-bold italic text-gray-400">Bengaluru</em>
         </h2>
 
         <div className="grid gap-6 sm:grid-cols-3">

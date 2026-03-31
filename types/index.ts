@@ -32,15 +32,15 @@ export interface LeadRequest {
   vehicleYear: number;
   vehicleMake: string;
   vehicleModel: string;
-  quoteAmount: number;
-  // Step 2
-  servicePin: string;
-  serviceCity: string;
-  serviceAddress: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  slotId: number;
-  // Step 3
+  quoteAmount?: number;
+  // Step 2 (optional — no longer collected in funnel)
+  servicePin?: string;
+  serviceCity?: string;
+  serviceAddress?: string;
+  appointmentDate?: string;
+  appointmentTime?: string;
+  slotId?: number;
+  // Step 3 (now Step 2)
   customerName: string;
   customerPhone: string;
   customerEmail?: string;
@@ -71,26 +71,17 @@ export interface AttributionData {
 
 // Booking form state
 export interface BookingState {
-  step: 1 | 2 | 3 | 4;
-  // Step 1
+  step: 1 | 2 | 3;
+  // Step 1: Car Details
   vehicleYear?: number;
   vehicleMake?: string;
   vehicleModel?: string;
-  quoteAmount?: number;
   glassType?: "front" | "rear";
-  // Step 2
-  servicePin?: string;
-  serviceCity?: string;
-  serviceAddress?: string;
-  appointmentDate?: string;
-  appointmentTime?: string;
-  slotId?: number;
-  pinCovered?: boolean;
-  // Step 3
+  // Step 2: Contact Info
   customerName?: string;
   customerPhone?: string;
   customerEmail?: string;
-  // Confirmation
+  // Step 3: Confirmation
   referenceId?: string;
 }
 

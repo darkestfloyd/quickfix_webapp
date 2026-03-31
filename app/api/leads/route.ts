@@ -1,10 +1,9 @@
 /**
  * /api/leads  POST
  *
- * Persists a completed booking to the lead_requests table and increments
- * the booked_count on the selected availability slot.
+ * Persists a quote request to the lead_requests table.
  *
- * Called automatically from ConfirmationStep on mount (step 4).
+ * Called automatically from ConfirmationStep on mount (step 3).
  * Includes UTM / fbclid attribution from sessionStorage.
  *
  * Body: LeadRequest (see types/index.ts)
@@ -17,8 +16,7 @@ import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { leadRequests, availabilitySlots } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { leadRequests } from "@/lib/db/schema";
 
 function sha256(value: string): string {
   return createHash("sha256").update(value.trim().toLowerCase()).digest("hex");
@@ -28,12 +26,12 @@ const leadSchema = z.object({
   vehicleYear: z.number().int().min(2000).max(2030),
   vehicleMake: z.string().min(1).max(100),
   vehicleModel: z.string().min(1).max(100),
-  quoteAmount: z.number().positive(),
-  servicePin: z.string().regex(/^\d{6}$/),
-  serviceCity: z.string().max(100),
-  serviceAddress: z.string().min(5).max(500),
-  appointmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  appointmentTime: z.string().regex(/^\d{2}:\d{2}/),
+  quoteAmount: z.number().positive().optional(),
+  servicePin: z.string().regex(/^\d{6}$/).optional(),
+  serviceCity: z.string().max(100).optional(),
+  serviceAddress: z.string().min(5).max(500).optional(),
+  appointmentDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  appointmentTime: z.string().regex(/^\d{2}:\d{2}/).optional(),
   slotId: z.number().int().positive().optional(),
   customerName: z.string().min(2).max(200),
   customerPhone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
@@ -74,13 +72,13 @@ export async function POST(req: NextRequest) {
       vehicleYear: data.vehicleYear,
       vehicleMake: data.vehicleMake,
       vehicleModel: data.vehicleModel,
-      quoteAmount: String(data.quoteAmount),
-      servicePin: data.servicePin,
-      serviceCity: data.serviceCity,
-      serviceAddress: data.serviceAddress,
-      appointmentDate: data.appointmentDate,
-      appointmentTime: data.appointmentTime,
-      slotId: data.slotId,
+      quoteAmount: data.quoteAmount ? String(data.quoteAmount) : null,
+      servicePin: data.servicePin ?? null,
+      serviceCity: data.serviceCity ?? null,
+      serviceAddress: data.serviceAddress ?? null,
+      appointmentDate: data.appointmentDate ?? null,
+      appointmentTime: data.appointmentTime ?? null,
+      slotId: data.slotId ?? null,
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       customerEmail: data.customerEmail || null,
@@ -94,17 +92,6 @@ export async function POST(req: NextRequest) {
       status: "pending",
     })
     .returning({ id: leadRequests.id });
-
-  // Increment booked count for the slot (best-effort)
-  if (data.slotId) {
-    await db
-      .update(availabilitySlots)
-      .set({ bookedCount: sql`${availabilitySlots.bookedCount} + 1` })
-      .where(eq(availabilitySlots.id, data.slotId))
-      .catch(() => {
-        // Non-fatal: slot count increment failure doesn't block lead creation
-      });
-  }
 
   // Conversions API — server-side event for improved match quality (bypasses iOS/ad blocker signal loss)
   const capiPixelId = process.env.META_PIXEL_ID;
@@ -134,7 +121,7 @@ export async function POST(req: NextRequest) {
             user_data: userData,
             custom_data: {
               currency: "INR",
-              value: data.quoteAmount,
+              value: data.quoteAmount ?? 0,
             },
           }],
         }),

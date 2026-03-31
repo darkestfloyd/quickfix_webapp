@@ -2,7 +2,6 @@
 
 import { useBooking } from "./BookingStore";
 import { VehicleStep } from "./steps/VehicleStep";
-import { LocationStep } from "./steps/LocationStep";
 import { ContactStep } from "./steps/ContactStep";
 import { ConfirmationStep } from "./steps/ConfirmationStep";
 import { ChevronLeft } from "lucide-react";
@@ -11,9 +10,8 @@ import { cn } from "@/lib/utils";
 
 const STEPS = [
   { number: 1, label: "Car Details" },
-  { number: 2, label: "Schedule" },
-  { number: 3, label: "Contact" },
-  { number: 4, label: "Confirm" },
+  { number: 2, label: "Contact" },
+  { number: 3, label: "Confirm" },
 ];
 
 export function BookingForm() {
@@ -33,12 +31,12 @@ export function BookingForm() {
             </p>
             <p className="text-xs text-gray-400">{pct}% complete</p>
           </div>
-          {state.step > 1 && state.step < 4 && (
+          {state.step > 1 && state.step < 3 && (
             <Button
               variant="ghost"
               size="sm"
               className="gap-1 text-xs text-gray-400 hover:text-black"
-              onClick={() => goToStep((state.step - 1) as 1 | 2 | 3 | 4)}
+              onClick={() => goToStep((state.step - 1) as 1 | 2 | 3)}
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               Back
@@ -69,9 +67,8 @@ export function BookingForm() {
       {/* Step content */}
       <div className="animate-fade-in">
         {state.step === 1 && <VehicleStep />}
-        {state.step === 2 && <LocationStep />}
-        {state.step === 3 && <ContactStep />}
-        {state.step === 4 && <ConfirmationStep />}
+        {state.step === 2 && <ContactStep />}
+        {state.step === 3 && <ConfirmationStep />}
       </div>
     </div>
   );

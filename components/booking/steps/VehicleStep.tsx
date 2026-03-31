@@ -13,9 +13,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useBooking } from "../BookingStore";
-import { trackQuoteView, trackStepComplete } from "@/lib/meta-events";
-import { formatINR, cn } from "@/lib/utils";
-import { Shield, Check, Ban } from "lucide-react";
+import { trackStepComplete } from "@/lib/meta-events";
+import { cn } from "@/lib/utils";
+import { Shield, Ban } from "lucide-react";
 
 const schema = z.object({
   make: z.string().min(1, "Select a make"),
@@ -45,8 +45,6 @@ const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string; disa
 export function VehicleStep() {
   const { dispatch, goToStep, sessionId } = useBooking();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
-  const [quote, setQuote] = useState<number | null>(null);
-  const [quoteError, setQuoteError] = useState<string | null>(null);
 
   const {
     handleSubmit,
@@ -74,39 +72,12 @@ export function VehicleStep() {
     vehicles.filter((v) => v.make === selectedMake).map((v) => v.model)
   )).sort();
 
-  // Instant client-side price lookup — only runs once glass type is also selected
-  // Rear/door glass is priced at 80% of the front windshield price
-  useEffect(() => {
-    if (!selectedYear || !selectedMake || !selectedModel || !selectedGlass) {
-      setQuote(null);
-      setQuoteError(null);
-      return;
-    }
-
-    const match = vehicles.find(
-      (v) => v.make === selectedMake && v.model === selectedModel && v.year === selectedYear
-    );
-
-    if (match) {
-      const basePrice = parseFloat(match.currentPrice);
-      const price = selectedGlass === "rear" ? Math.round(basePrice * 0.8) : basePrice;
-      setQuote(price);
-      setQuoteError(null);
-      trackQuoteView(price);
-    } else {
-      setQuote(null);
-      setQuoteError("Vehicle not in our price list. We'll contact you with a custom quote.");
-    }
-  }, [selectedYear, selectedMake, selectedModel, selectedGlass, vehicles]);
-
   const onSubmit = (data: FormData) => {
-    if (!quote && !quoteError) return;
     dispatch({
       type: "SET_VEHICLE",
       year: data.year,
       make: data.make,
       model: data.model,
-      quoteAmount: quote ?? 0,
       glassType: data.glassType,
     });
     trackStepComplete(1, "Vehicle");
@@ -126,7 +97,7 @@ export function VehicleStep() {
           <em className="font-bold italic text-gray-400">vehicle</em>.
         </h2>
         <p className="mt-2 text-sm text-gray-500">
-          Precision is paramount. Select your car details for an exact quote.
+          Select your car details so we can provide the most accurate quote.
         </p>
       </div>
 
@@ -143,7 +114,6 @@ export function VehicleStep() {
               onClick={() => {
                 setValue("make", make, { shouldValidate: true });
                 setValue("model", "");
-                setQuote(null);
               }}
               className={cn(
                 "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
@@ -172,7 +142,6 @@ export function VehicleStep() {
                 if (e.target.value) {
                   setValue("make", e.target.value, { shouldValidate: true });
                   setValue("model", "");
-                  setQuote(null);
                 }
               }}
             >
@@ -193,7 +162,7 @@ export function VehicleStep() {
         </p>
         <Select
           disabled={!selectedMake}
-          onValueChange={(v) => { setValue("model", v, { shouldValidate: true }); setQuote(null); }}
+          onValueChange={(v) => setValue("model", v, { shouldValidate: true })}
         >
           <SelectTrigger className="h-12 rounded-lg border-gray-200">
             <SelectValue placeholder={selectedMake ? "Choose Model" : "Select make first"} />
@@ -280,32 +249,6 @@ export function VehicleStep() {
         {errors.glassType && <p className="text-xs text-red-500">{errors.glassType.message}</p>}
       </div>
 
-      {/* Quote display — appears instantly on year selection */}
-      {quote && (
-        <div className="animate-fade-in rounded-xl border border-gray-200 bg-stone-50 p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Estimated Quote</p>
-              <p className="mt-1 font-serif text-4xl font-bold text-black">{formatINR(quote)}</p>
-              <p className="mt-1 text-xs text-gray-500">Inclusive of tax and labour, no surprises.</p>
-            </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-700">
-              <Check className="h-3 w-3" />
-              Fixed Price
-            </div>
-          </div>
-        </div>
-      )}
-
-      {quoteError && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
-          <p className="font-semibold">Vehicle not in our price list</p>
-          <p className="mt-1 text-xs text-gray-500">
-            Proceed anyway — we&apos;ll contact you with a custom quote within 2 hours.
-          </p>
-        </div>
-      )}
-
       {/* Concierge guarantee */}
       <div className="flex items-start gap-3 rounded-lg border border-teal-200 bg-teal-50 p-4">
         <Shield className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" />
@@ -317,20 +260,14 @@ export function VehicleStep() {
         </div>
       </div>
 
-      {/* Instant booking */}
-      <div className="flex items-center gap-2 text-xs text-teal-600">
-        <Check className="h-3.5 w-3.5" strokeWidth={3} />
-        <span className="font-semibold uppercase tracking-wide">Instant Booking Available</span>
-      </div>
-
       <Button
         type="submit"
         variant="black"
         size="lg"
         className="w-full"
-        disabled={!selectedModel || !selectedGlass || (!quote && !quoteError)}
+        disabled={!selectedModel || !selectedGlass}
       >
-        CONTINUE TO SCHEDULE →
+        CONTINUE →
       </Button>
     </form>
   );

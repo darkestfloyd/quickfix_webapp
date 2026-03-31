@@ -1,15 +1,9 @@
 /**
- * BookingStore — global state for the 4-step booking funnel.
+ * BookingStore — global state for the 3-step quote request funnel.
  *
- * State flows:  step 1 (vehicle) → step 2 (location) → step 3 (contact) → step 4 (confirmation)
+ * State flows:  step 1 (vehicle) → step 2 (contact) → step 3 (confirmation)
  * Persistence:  sessionStorage (key: "qf_booking") — survives page refresh, cleared on tab close
  * Session ID:   generated once per tab, stored in sessionStorage as "qf_session_id"
- *
- * To add a new step:
- *   1. Add fields to BookingState in types/index.ts
- *   2. Add an Action type here and handle it in reducer()
- *   3. Add a new step component in components/booking/steps/
- *   4. Register it in BookingForm.tsx (STEPS array + render block)
  *
  * To access state anywhere inside the funnel:
  *   const { state, dispatch, goToStep, sessionId } = useBooking();
@@ -23,17 +17,7 @@ import { getStoredAttribution } from "@/lib/attribution";
 
 type Action =
   | { type: "SET_STEP"; step: BookingState["step"] }
-  | { type: "SET_VEHICLE"; year: number; make: string; model: string; quoteAmount: number; glassType: "front" | "rear" }
-  | {
-      type: "SET_LOCATION";
-      servicePin: string;
-      serviceCity: string;
-      serviceAddress: string;
-      appointmentDate: string;
-      appointmentTime: string;
-      slotId: number;
-      pinCovered: boolean;
-    }
+  | { type: "SET_VEHICLE"; year: number; make: string; model: string; glassType: "front" | "rear" }
   | { type: "SET_CONTACT"; customerName: string; customerPhone: string; customerEmail?: string }
   | { type: "SET_REFERENCE"; referenceId: string }
   | { type: "SET_SESSION"; sessionId: string };
@@ -50,19 +34,7 @@ function reducer(state: BookingState, action: Action): BookingState {
         vehicleYear: action.year,
         vehicleMake: action.make,
         vehicleModel: action.model,
-        quoteAmount: action.quoteAmount,
         glassType: action.glassType,
-      };
-    case "SET_LOCATION":
-      return {
-        ...state,
-        servicePin: action.servicePin,
-        serviceCity: action.serviceCity,
-        serviceAddress: action.serviceAddress,
-        appointmentDate: action.appointmentDate,
-        appointmentTime: action.appointmentTime,
-        slotId: action.slotId,
-        pinCovered: action.pinCovered,
       };
     case "SET_CONTACT":
       return {

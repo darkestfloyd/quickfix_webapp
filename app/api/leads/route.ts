@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { leadRequests } from "@/lib/db/schema";
+import { sendLeadNotification } from "@/lib/email";
 
 function sha256(value: string): string {
   return createHash("sha256").update(value.trim().toLowerCase()).digest("hex");
@@ -92,6 +93,26 @@ export async function POST(req: NextRequest) {
       status: "pending",
     })
     .returning({ id: leadRequests.id });
+
+  // Email notification to admin — non-fatal, fire-and-forget
+  sendLeadNotification({
+    referenceId: lead.id,
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    customerEmail: data.customerEmail,
+    vehicleYear: data.vehicleYear,
+    vehicleMake: data.vehicleMake,
+    vehicleModel: data.vehicleModel,
+    quoteAmount: data.quoteAmount ? String(data.quoteAmount) : null,
+    servicePin: data.servicePin,
+    serviceCity: data.serviceCity,
+    serviceAddress: data.serviceAddress,
+    appointmentDate: data.appointmentDate,
+    appointmentTime: data.appointmentTime,
+    utmSource: data.utmSource,
+    utmMedium: data.utmMedium,
+    utmCampaign: data.utmCampaign,
+  }).catch(() => {}); // Non-fatal — DB insert already succeeded
 
   // Conversions API — server-side event for improved match quality (bypasses iOS/ad blocker signal loss)
   const capiPixelId = process.env.META_PIXEL_ID;

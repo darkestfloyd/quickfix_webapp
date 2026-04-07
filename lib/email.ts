@@ -45,12 +45,18 @@ export async function sendLeadNotification(lead: LeadEmailData): Promise<void> {
     return;
   }
 
+  const recipients = adminEmail.split(",").map((e) => e.trim()).filter(Boolean);
+  if (recipients.length === 0) {
+    console.warn("[email] Skipped: ADMIN_EMAIL is empty after parsing");
+    return;
+  }
+
   const subject = `New Lead: ${lead.customerName} — ${lead.vehicleYear} ${lead.vehicleMake} ${lead.vehicleModel}`;
 
   try {
     await mailClient.sendMail({
       from: { address: "noreply@quickfixwindshields.co", name: "QuickFix Windshields" },
-      to: [{ email_address: { address: adminEmail, name: "Admin" } }],
+      to: recipients.map((addr) => ({ email_address: { address: addr, name: "Admin" } })),
       subject,
       htmlbody: buildHtml(lead),
     });

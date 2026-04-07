@@ -14,7 +14,7 @@ Premium doorstep windshield repair and replacement service in Bengaluru. Custome
 | Page | Purpose |
 |------|---------|
 | `/` | Marketing landing page — trust signals, services, process, testimonials, coverage |
-| `/booking` | 4-step booking funnel — vehicle → schedule → contact → confirmation |
+| `/booking` | 3-step quote request flow — vehicle → contact → confirmation |
 | `/privacy` | Privacy Policy |
 | `/terms` | Terms of Service |
 | `/api/quote` | Returns INR price for a given vehicle (rate-limited) |
@@ -81,8 +81,7 @@ quickfix/
 │   │   ├── BookingStore.tsx    # Context + useReducer — all funnel state
 │   │   ├── BookingForm.tsx     # Tab-style progress + step routing
 │   │   └── steps/
-│   │       ├── VehicleStep.tsx      # Brand grid + glass type radio + live quote
-│   │       ├── LocationStep.tsx     # PIN input, calendar, time slots
+│   │       ├── VehicleStep.tsx      # 5 brand tiles + inline "Other" make dropdown + model/year/glass
 │   │       ├── ContactStep.tsx      # Form + booking summary card (desktop)
 │   │       └── ConfirmationStep.tsx # Auto-submit, dark arrival card, payment info
 │   └── MetaPixel.tsx
@@ -96,7 +95,8 @@ quickfix/
 │       ├── index.ts        # Drizzle + Neon HTTP client
 │       ├── schema.ts       # All table definitions
 │       ├── migrate.ts      # Migration runner
-│       └── seed.ts         # Seed: vehicles, Bengaluru PINs, availability slots
+│       ├── seed.ts         # Seed: parses car_list_india.csv + PINs + availability slots
+│       └── car_list_india.csv  # 229-vehicle catalog (Make, Model, Category)
 │
 ├── types/index.ts          # Shared TS types (BookingState, LeadRequest, etc.)
 ├── .env.example            # All required env vars with descriptions
@@ -110,7 +110,9 @@ quickfix/
 
 **azure_concierge theme** — black/white/teal palette, Playfair Display serif headings with italic emphasis pattern (`"Effortless` *`Restoration`*`"`). No navy or amber. CTAs are black uppercase with letter-spacing.
 
-**Single-page booking funnel** — state lives in React Context + sessionStorage, not URL params. Preserves state on accidental refresh without full page reloads between steps.
+**3-step quote request flow** — vehicle → contact → confirmation. State lives in React Context + sessionStorage, not URL params. Preserves state on accidental refresh without full page reloads between steps. A coordinator calls within 2 hours to confirm; no scheduling step in-app.
+
+**229-vehicle catalog** — loaded from `lib/db/car_list_india.csv` (Make, Model, Category). Year is UI-only (static 2015–2024 dropdown); the DB stores make/model/category and assigns base prices by category tier. Vehicle picker shows 5 grid brand tiles (Maruti Suzuki, Hyundai, BMW, Honda, Toyota) with an inline "Other" dropdown for all remaining DB makes, plus a freeform fallback for anything not listed.
 
 **560* PIN fallback** — instead of requiring every Bengaluru PIN to be seeded, the availability API automatically covers any `560xxx` PIN. Only add DB entries when a location-specific surcharge applies.
 

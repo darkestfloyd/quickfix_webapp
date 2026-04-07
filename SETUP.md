@@ -83,7 +83,7 @@ pnpm db:generate   # creates a new file in drizzle/
 pnpm db:migrate    # applies it to Neon
 ```
 
-Migration files in `drizzle/` are committed to git.
+Migration files in `drizzle/` are **gitignored** — they are generated locally and applied to Neon, but not stored in the repo.
 
 ### Inspecting data
 
@@ -91,7 +91,7 @@ The fastest way to inspect or edit data is via the **Neon SQL Editor** at consol
 
 ```sql
 -- Check seeded vehicles
-SELECT make, model, current_price FROM vehicle_pricing ORDER BY make;
+SELECT make, model, vehicle_category, current_price FROM vehicle_pricing ORDER BY make;
 
 -- Check PIN coverage
 SELECT pin_code, city, is_active FROM service_pin_coverage;
@@ -123,18 +123,33 @@ for (let d = 1; d <= 30; d++) {  // change 30 to however many days you want
 
 ## Adding / Modifying Vehicles
 
-Edit the `VEHICLES` array in `lib/db/seed.ts`:
+The vehicle catalog is loaded from **`lib/db/car_list_india.csv`** (columns: Make, Model, Vehicle Category). The seed script assigns base prices by category tier and applies a 15% markup.
 
-```ts
-{ year: 2024, make: "Kia", model: "Seltos", basePrice: 6000 },
+To add a vehicle, append a row to the CSV and re-run `pnpm db:seed`:
+
+```
+Kia,Seltos,Compact SUV
 ```
 
-Then re-run `pnpm db:seed`. To add a model without re-seeding, insert directly via Neon SQL Editor:
+Base prices are assigned automatically by category keyword:
+
+| Category | Base price |
+|---|---|
+| Hatchback / Compact | ₹3,800 |
+| Sedan / SUV / MPV / Crossover | ₹5,500 |
+| Premium Sedan/SUV / Electric | ₹8,500 |
+| Performance SUV | ₹10,000 |
+| Luxury / Grand Tourer | ₹12,000 |
+| Ultra-Luxury / Supercar | ₹18,000 |
+
+To insert a vehicle directly via Neon SQL Editor (without touching the CSV):
 
 ```sql
-INSERT INTO vehicle_pricing (year, make, model, base_price, current_price)
-VALUES (2024, 'Kia', 'Seltos', 6000, 6900);
+INSERT INTO vehicle_pricing (make, model, vehicle_category, base_price, current_price)
+VALUES ('Kia', 'Seltos', 'Compact SUV', 3800, 4370);
 ```
+
+Note: `year` is no longer stored in the DB — it is captured as a UI-only field during the booking flow.
 
 ---
 
@@ -289,7 +304,7 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 → `.env.local` is missing or `DATABASE_URL` is blank. The DB client throws immediately on first request.
 
 **Quote returns 404 for a vehicle**
-→ The vehicle isn't in `vehicle_pricing`. Add it via seed or direct SQL insert (see above).
+→ The vehicle isn't in `vehicle_pricing`. Add it to `lib/db/car_list_india.csv` and re-run `pnpm db:seed`, or insert directly via Neon SQL Editor (see above).
 
 **PIN code shows "outside coverage"**
 → Any `560xxx` PIN is automatically covered via API fallback — no DB entry needed. If a `560xxx` PIN is showing as uncovered, check `app/api/availability/route.ts` for the `blrFallback` logic. For non-Bengaluru PINs, add the PIN explicitly to `service_pin_coverage`.

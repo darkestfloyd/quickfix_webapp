@@ -1,65 +1,130 @@
-# QuickFix Mobile-First Scheduling App Plan
+# QuickFix Windshields — Product & Technical Specification
 
 ## Summary
-Build a mobile-first Next.js App Router web app on Vercel with Neon Postgres. The product is a premium, lead-generation focused scheduling flow for mobile windshield replacement. The funnel drives users from a luxury landing page to a quote, then to scheduling, contact capture, and confirmation. Traffic is expected to be 90%+ mobile, so all UX, performance, and form ergonomics are designed for phones first.
 
-## Stack And Bootstrapping
-- Node.js 22+ required (local and CI).
-- Package manager: `pnpm`.
-- Bootstrap with `pnpm create next-app@latest` (App Router, TypeScript, ESLint).
-- Use Tailwind CSS and shadcn/ui for the UI.
-- Use React Hook Form + Zod for the multi-step form.
-- Deploy on Vercel.
-- Database: Neon Postgres.
+Lead generation website for a premium mobile windshield repair and replacement service in Bengaluru. The funnel drives users from a marketing landing page to a 3-step quote request flow. A coordinator calls within 2 hours to confirm and schedule. No in-app scheduling — appointment booking happens over the phone.
 
-## Scope And UX
-- Landing page optimized for lead capture:
-  premium positioning, trust signals, short copy, and a dominant `Get Free Quote` CTA.
-- Funnel steps:
-  1) Vehicle make/model/year selection.
-  2) Location ZIP and appointment time (live availability).
-  3) Contact info.
-  4) Confirmation with summary, contact methods, and payment info.
-- Provide quick quote after vehicle selection using pricing data from Neon plus markup.
-- Rate limit quote lookups to reduce abuse.
-- Handle unsupported vehicles and out-of-coverage ZIPs gracefully without dead ends.
-- Mobile-first UX:
-  large tap targets, sticky CTA, autofill-friendly inputs, numeric keyboards for ZIP/phone.
+**Target audience**: High-income car owners in Bengaluru who want a hassle-free, doorstep service.
 
-## Data Model (Neon)
-- `vehicle_pricing`: year/make/model/base_price/current_price.
-- `pricing_markup`: markup rules used to compute the displayed quote.
-- `service_zip_coverage`: supported ZIP codes and optional surcharge fields.
-- `availability_slots`: available appointment slots (externally maintained).
-- `lead_requests`: canonical lead record with vehicle details, quote snapshot, scheduling data, contact info, attribution, and status.
-- `lead_events` (optional): step completion and interaction events.
+---
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Language | TypeScript (strict) |
+| Styling | Tailwind CSS v3 (azure_concierge theme) |
+| UI | shadcn/ui (manually written, no CLI) |
+| Forms | React Hook Form + Zod |
+| Database | Neon Postgres via Drizzle ORM |
+| Rate limiting | Upstash Redis (`@upstash/ratelimit`, fail-open) |
+| Analytics | Meta Pixel (client) + server-side Conversions API |
+| Deploy | Vercel, region `bom1` (Mumbai) |
+| Package manager | pnpm |
+
+---
+
+## Funnel — 3 Steps
+
+### Step 1: Vehicle
+- 5 primary brand tiles: Maruti Suzuki, Hyundai, BMW, Honda, Toyota
+- Inline "Other" dropdown (6th grid cell): all remaining DB makes alphabetically + "Other (not listed)" option
+- Selecting "Other (not listed)" reveals freeform Make + Model text inputs
+- Model dropdown (filtered by selected make from DB)
+- Year dropdown (static 2015–2024, UI-only — not stored in vehicle catalog)
+- Glass type: Front Windshield (enabled) | Rear/Door Glass (disabled, coming soon)
+
+### Step 2: Contact
+- Name, phone (10-digit Indian mobile, 6–9 prefix), email (optional)
+- Desktop: form + booking summary side-by-side
+
+### Step 3: Confirmation
+- Auto-submits lead on mount
+- Shows reference ID, expected callback window (2 hrs), technician arrival info
+- Payment info: UPI / Card / Cash at service
+- WhatsApp and phone CTA for immediate contact
+
+---
+
+## Data Model
+
+### `vehicle_pricing`
+| Column | Type | Notes |
+|---|---|---|
+| id | serial PK | |
+| make | varchar(100) | |
+| model | varchar(100) | |
+| vehicle_category | varchar(100) | nullable; from CSV |
+| base_price | numeric(10,2) | pre-markup |
+| current_price | numeric(10,2) | base_price × 1.15 |
+
+Unique on `(make, model)`. Year is not stored — it is captured as a UI field and written to `lead_requests` only.
+
+### `pricing_markup`
+Global markup rules. Currently: 15% on all vehicles. Change value in DB to globally adjust prices (no redeploy needed).
+
+### `service_pin_coverage`
+Stores PIN-specific surcharges. Any `560xxx` PIN not in this table is automatically covered as Bengaluru with ₹0 surcharge (API fallback).
+
+### `availability_slots`
+Mon–Sat, 3 fixed windows/day (09:00–12:00, 12:00–14:00, 14:00–17:00), seeded for next 30 days. Not currently shown in-funnel — scheduling happens by phone.
+
+### `lead_requests`
+One row per submitted booking. Captures vehicle details (year/make/model), quote amount, customer info, attribution (UTM, fbclid, referrer, sessionId), and status.
+
+### `lead_events`
+Server-side funnel event log: `step_complete`, `lead_submit`, etc. Keyed by sessionId.
+
+---
+
+## Vehicle Catalog
+
+- **Source**: `lib/db/car_list_india.csv` — 229 vehicles, 3 columns: Make, Model, Vehicle Category
+- **Seeding**: `pnpm db:seed` parses the CSV and assigns base prices by category keyword
+- **Pricing tiers**:
+
+| Category keywords | Base price (INR) |
+|---|---|
+| Hatchback / Compact | ₹3,800 |
+| Sedan / SUV / MPV / Crossover (unqualified) | ₹5,500 |
+| Premium Sedan/SUV / Electric | ₹8,500 |
+| Performance SUV | ₹10,000 |
+| Luxury / Grand Tourer | ₹12,000 |
+| Ultra-Luxury / Supercar | ₹18,000 |
+
+---
 
 ## API Routes
-- `POST /api/quote`: lookup vehicle pricing + markup, return quick quote (rate-limited).
-- `GET /api/availability`: return available slots for a ZIP or region.
-- `POST /api/leads`: validate and store final submission.
-- `POST /api/track`: optional server-side event collection for attribution.
 
-## Marketing And Attribution
-- Meta-only launch (Instagram/Facebook ads).
-- Capture `utm_*`, `fbclid`, referrer, landing page, session id.
-- Fire tracking events:
-  page view, CTA click, quote view, step progress, lead submit, confirmation view.
-- Store attribution alongside the lead record.
+| Route | Method | Description |
+|---|---|---|
+| `/api/quote` | GET | Full vehicle list with prices (cached 1 hr). Used by VehicleStep on mount. |
+| `/api/quote` | POST | Price lookup by make+model (rate-limited: 5 req/IP/60s, fail-open). |
+| `/api/availability` | GET | Open slots by PIN code (560* fallback for Bengaluru). |
+| `/api/leads` | POST | Persist lead + fire Meta Conversions API event. |
+| `/api/track` | POST | Server-side funnel event logging. |
 
-## Admin/Ops Scope
-- No in-app admin in v1.
-- Pricing, ZIP coverage, and availability maintained outside the app and loaded into Neon.
+---
 
-## Test Plan
-- Mobile UX: fast load, above-the-fold CTA, no horizontal scroll, thumb-friendly inputs.
-- Quote lookup: correct pricing + markup, handles missing data, rate limit enforced.
-- ZIP coverage: supported ZIPs proceed, unsupported ZIPs provide manual review path.
-- Availability: returns valid future slots, handles empty availability safely.
-- Lead submission: persisted with quote snapshot and attribution.
-- Meta event tracking fires correctly across the funnel.
+## Attribution
 
-## Risks And Mitigations
-- Pricing data quality: validate required fields and provide fallback messaging.
-- Availability data latency: cache at the edge with short TTL to keep UX fast.
-- Mobile drop-off: keep steps short, reduce typing, and preserve progress between steps.
+- UTM params (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`) and `fbclid` captured on first page load → stored in `sessionStorage`
+- Written to every `lead_requests` row at submission
+- Server-side Meta Conversions API fires on lead submit (hashed phone + email)
+
+---
+
+## Service Coverage
+
+Bengaluru only. Availability API accepts any `560xxx` PIN without a DB entry. Add rows to `service_pin_coverage` only when a surcharge applies for a specific area.
+
+---
+
+## Design System (azure_concierge)
+
+- **Palette**: Black (#000) CTAs, white/stone backgrounds, teal (#00C9A7) for success/guarantee
+- **Typography**: Playfair Display (headings, italic emphasis on key word), Inter (body)
+- **CTAs**: Black uppercase with letter-spacing (`"GET FREE QUOTE →"`)
+- **Heading pattern**: `"Effortless` *`Restoration`*`"` — main word + italic emphasis
+- **Mobile-first**: all layouts designed for phone; desktop adds split views

@@ -1,7 +1,7 @@
 # QuickFix Windshields — Doorstep Windshield Service Website
 
 ## Project Overview
-Lead generation website for a premium doorstep windshield repair and replacement service. Customers get an instant quote, select a time slot, and submit their contact details. A coordinator calls within 2 hours to confirm.
+Lead generation website for a premium doorstep windshield repair and replacement service. Customers submit a quote request in 3 steps (vehicle → contact → confirmation); a coordinator calls within 2 hours to confirm and schedule.
 
 ## Business Details
 - **Business name**: QuickFix Windshields
@@ -31,7 +31,7 @@ quickfix/
 │   ├── layout.tsx          # Root layout: fonts, Schema.org JSON-LD, MetaPixel
 │   ├── page.tsx            # Landing page (composes section components)
 │   ├── globals.css         # Tailwind base + CSS custom properties
-│   ├── booking/page.tsx    # 4-step booking funnel
+│   ├── booking/page.tsx    # 3-step quote request flow (vehicle → contact → confirmation)
 │   ├── privacy/page.tsx    # Privacy Policy
 │   ├── terms/page.tsx      # Terms of Service
 │   └── api/
@@ -49,7 +49,7 @@ quickfix/
 │   ├── attribution.ts      # UTM/fbclid capture → sessionStorage
 │   ├── meta-events.ts      # fbq() wrappers
 │   ├── rate-limit.ts       # Upstash sliding-window rate limiter (fail-open)
-│   └── db/                 # Drizzle client, schema, migrate, seed
+│   └── db/                 # Drizzle client, schema, migrate, seed, car_list_india.csv
 ├── types/index.ts          # Shared TypeScript interfaces (BookingState, etc.)
 ├── drizzle.config.ts
 ├── vercel.json             # Region bom1
@@ -65,7 +65,7 @@ pnpm typecheck    # tsc --noEmit
 
 pnpm db:generate  # Generate Drizzle migrations from schema changes
 pnpm db:migrate   # Apply migrations to Neon
-pnpm db:seed      # Seed vehicles, PIN codes, availability slots
+pnpm db:seed      # Seed vehicles from car_list_india.csv, PIN codes, availability slots
 ```
 
 ## Conventions

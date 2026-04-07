@@ -35,16 +35,30 @@ interface LeadEmailData {
 export async function sendLeadNotification(lead: LeadEmailData): Promise<void> {
   const mailClient = getClient();
   const adminEmail = process.env.ADMIN_EMAIL;
-  if (!mailClient || !adminEmail) return;
+
+  if (!mailClient) {
+    console.warn("[email] Skipped: ZEPTOMAIL_TOKEN is not set");
+    return;
+  }
+  if (!adminEmail) {
+    console.warn("[email] Skipped: ADMIN_EMAIL is not set");
+    return;
+  }
 
   const subject = `New Lead: ${lead.customerName} — ${lead.vehicleYear} ${lead.vehicleMake} ${lead.vehicleModel}`;
 
-  await mailClient.sendMail({
-    from: { address: "noreply@quickfixwindshields.co", name: "QuickFix Windshields" },
-    to: [{ email_address: { address: adminEmail, name: "Admin" } }],
-    subject,
-    htmlbody: buildHtml(lead),
-  });
+  try {
+    await mailClient.sendMail({
+      from: { address: "noreply@quickfixwindshields.co", name: "QuickFix Windshields" },
+      to: [{ email_address: { address: adminEmail, name: "Admin" } }],
+      subject,
+      htmlbody: buildHtml(lead),
+    });
+    console.log(`[email] Sent lead notification for ${lead.referenceId} to ${adminEmail}`);
+  } catch (err) {
+    console.error(`[email] Failed to send for ${lead.referenceId}:`, err);
+    throw err;
+  }
 }
 
 function row(label: string, value: string | null | undefined): string {

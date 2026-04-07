@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useBooking } from "../BookingStore";
 import { trackLeadSubmit, trackStepComplete } from "@/lib/meta-events";
 import { getStoredAttribution } from "@/lib/attribution";
@@ -17,8 +17,12 @@ export function ConfirmationStep() {
   const [submitting, setSubmitting] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [referenceId, setReferenceId] = useState<string | null>(null);
+  const submitted = useRef(false);
 
   useEffect(() => {
+    if (submitted.current) return;
+    submitted.current = true;
+
     const attribution = getStoredAttribution();
     const eventId = `lead_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     const payload = {

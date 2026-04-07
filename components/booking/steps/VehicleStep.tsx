@@ -143,23 +143,27 @@ export function VehicleStep() {
               {make}
             </button>
           ))}
+          {/* Dropdown for all other DB makes + "Other (not listed)" — inline as 6th grid cell */}
+          <Select
+            onValueChange={handleOtherDropdownChange}
+            value={isFreeform ? "__other__" : (!GRID_MAKES.includes(selectedMake ?? "") && selectedMake) ? selectedMake : undefined}
+          >
+            <SelectTrigger className={cn(
+              "h-full min-h-[46px] rounded-lg border text-sm font-medium transition-colors",
+              (isFreeform || (!GRID_MAKES.includes(selectedMake ?? "") && selectedMake))
+                ? "border-black bg-black text-white"
+                : "border-gray-200 bg-white text-gray-500"
+            )}>
+              <SelectValue placeholder="Other…" />
+            </SelectTrigger>
+            <SelectContent>
+              {otherMakes.map((m) => (
+                <SelectItem key={m} value={m}>{m}</SelectItem>
+              ))}
+              <SelectItem value="__other__">Other (not listed)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-
-        {/* Dropdown for all other DB makes + "Other (not listed)" */}
-        <Select
-          onValueChange={handleOtherDropdownChange}
-          value={isFreeform ? "__other__" : (!GRID_MAKES.includes(selectedMake ?? "") && selectedMake) ? selectedMake : undefined}
-        >
-          <SelectTrigger className="h-12 rounded-lg border-gray-200">
-            <SelectValue placeholder="Other make…" />
-          </SelectTrigger>
-          <SelectContent>
-            {otherMakes.map((m) => (
-              <SelectItem key={m} value={m}>{m}</SelectItem>
-            ))}
-            <SelectItem value="__other__">Other (not listed)</SelectItem>
-          </SelectContent>
-        </Select>
 
         {/* Freeform inputs — only when "Other (not listed)" is selected */}
         {isFreeform && (

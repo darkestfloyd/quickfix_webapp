@@ -8,6 +8,7 @@
 - pnpm (`npm install -g pnpm`)
 - A [Neon](https://neon.tech) Postgres project (free tier works)
 - (Optional) An [Upstash](https://upstash.com) Redis database for rate limiting
+- (Optional) A [ZeptoMail](https://www.zoho.com/zeptomail/) account for admin email notifications
 
 ---
 
@@ -41,6 +42,11 @@ NEXT_PUBLIC_META_PIXEL_ID=PLACEHOLDER_PIXEL_ID
 
 # App base URL
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# ZeptoMail — admin email notifications on new leads
+# If missing, email notifications are silently skipped
+ZEPTOMAIL_TOKEN=your_zeptomail_api_token_here
+ADMIN_EMAIL=admin@quickfixwindshields.co,admin2@quickfixwindshields.co
 
 # Business contact (shown in footer and confirmation page)
 NEXT_PUBLIC_BUSINESS_PHONE=+91 98765 43210
@@ -271,6 +277,8 @@ Under **Settings → Environment Variables**, add everything from `.env.example`
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash token |
 | `NEXT_PUBLIC_META_PIXEL_ID` | Real Pixel ID |
 | `NEXT_PUBLIC_BASE_URL` | `https://www.quickfixwindshields.co` |
+| `ZEPTOMAIL_TOKEN` | ZeptoMail API token |
+| `ADMIN_EMAIL` | Comma-separated admin emails |
 | `NEXT_PUBLIC_BUSINESS_PHONE` | `+91 XXXXX XXXXX` |
 | `NEXT_PUBLIC_BUSINESS_WHATSAPP` | `91XXXXXXXXXX` |
 
@@ -295,6 +303,8 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 | `NEXT_PUBLIC_BASE_URL` | No | Used in Schema.org JSON-LD. Production: `https://www.quickfixwindshields.co` |
 | `NEXT_PUBLIC_BUSINESS_PHONE` | No | Shown in header, footer, confirmation page |
 | `NEXT_PUBLIC_BUSINESS_WHATSAPP` | No | WhatsApp deep link on confirmation page |
+| `ZEPTOMAIL_TOKEN` | No | ZeptoMail API token for admin email notifications. If missing, emails are silently skipped |
+| `ADMIN_EMAIL` | No | Comma-separated list of admin email addresses to notify on new leads |
 
 ---
 
@@ -311,6 +321,9 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 
 **No slots available for a date**
 → Either the slots weren't seeded, or `booked_count >= max_bookings`. Run `pnpm db:seed` or insert new slots directly. For a quick fix: `UPDATE availability_slots SET booked_count = 0;`
+
+**Admin email not sending on Vercel**
+→ Ensure `ZEPTOMAIL_TOKEN` and `ADMIN_EMAIL` are set in Vercel Environment Variables (Settings → Environment Variables). Email and Meta CAPI calls run inside `after()` from `next/server`, which keeps the serverless function alive after the response is sent. Without `after()`, fire-and-forget promises are killed when the function freezes. Check Vercel Functions logs for `[email]` prefixed messages to diagnose.
 
 **Rate limit blocking quote requests in dev**
 → Upstash Redis isn't configured (or is shared with prod). Either add a separate dev Upstash DB in `.env.local`, or temporarily remove `UPSTASH_REDIS_REST_URL` — rate limiting fails open and all requests pass through.

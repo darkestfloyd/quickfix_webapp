@@ -21,6 +21,7 @@ Lead generation website for a premium doorstep windshield repair and replacement
 - **Database**: Neon Postgres via Drizzle ORM
 - **Rate limiting**: Upstash Redis (`@upstash/ratelimit`)
 - **Analytics**: Meta Pixel (client) + server-side event log
+- **Email**: ZeptoMail transactional email (admin notifications on new leads)
 - **Package Manager**: **pnpm** (not npm)
 - **Deploy**: Vercel, region `bom1` (Mumbai)
 
@@ -37,7 +38,7 @@ quickfix/
 │   └── api/
 │       ├── quote/          # GET vehicle list | POST price lookup (rate-limited)
 │       ├── availability/   # GET open slots by PIN code (560* fallback)
-│       ├── leads/          # POST lead submission + attribution
+│       ├── leads/          # POST lead submission + attribution + admin email notification
 │       └── track/          # POST funnel event logging
 ├── components/
 │   ├── ui/                 # shadcn/ui primitives
@@ -48,6 +49,7 @@ quickfix/
 │   ├── utils.ts            # cn(), formatINR(), generateSessionId()
 │   ├── attribution.ts      # UTM/fbclid capture → sessionStorage
 │   ├── meta-events.ts      # fbq() wrappers
+│   ├── email.ts            # ZeptoMail client — admin notification on new leads
 │   ├── rate-limit.ts       # Upstash sliding-window rate limiter (fail-open)
 │   └── db/                 # Drizzle client, schema, migrate, seed, car_list_india.csv
 ├── types/index.ts          # Shared TypeScript interfaces (BookingState, etc.)

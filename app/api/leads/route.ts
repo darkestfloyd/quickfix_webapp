@@ -13,6 +13,7 @@
  *   SELECT * FROM lead_requests ORDER BY created_at DESC LIMIT 20;
  */
 import { createHash } from "crypto";
+import { after } from "next/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -94,61 +95,64 @@ export async function POST(req: NextRequest) {
     })
     .returning({ id: leadRequests.id });
 
-  // Email notification to admin — non-fatal, fire-and-forget
-  sendLeadNotification({
-    referenceId: lead.id,
-    customerName: data.customerName,
-    customerPhone: data.customerPhone,
-    customerEmail: data.customerEmail,
-    vehicleYear: data.vehicleYear,
-    vehicleMake: data.vehicleMake,
-    vehicleModel: data.vehicleModel,
-    quoteAmount: data.quoteAmount ? String(data.quoteAmount) : null,
-    servicePin: data.servicePin,
-    serviceCity: data.serviceCity,
-    serviceAddress: data.serviceAddress,
-    appointmentDate: data.appointmentDate,
-    appointmentTime: data.appointmentTime,
-    utmSource: data.utmSource,
-    utmMedium: data.utmMedium,
-    utmCampaign: data.utmCampaign,
-  }).catch(() => {}); // Non-fatal — DB insert already succeeded
+  // Background work — runs after the response is sent, keeps the serverless function alive on Vercel
+  after(async () => {
+    // Email notification to admin
+    await sendLeadNotification({
+      referenceId: lead.id,
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      customerEmail: data.customerEmail,
+      vehicleYear: data.vehicleYear,
+      vehicleMake: data.vehicleMake,
+      vehicleModel: data.vehicleModel,
+      quoteAmount: data.quoteAmount ? String(data.quoteAmount) : null,
+      servicePin: data.servicePin,
+      serviceCity: data.serviceCity,
+      serviceAddress: data.serviceAddress,
+      appointmentDate: data.appointmentDate,
+      appointmentTime: data.appointmentTime,
+      utmSource: data.utmSource,
+      utmMedium: data.utmMedium,
+      utmCampaign: data.utmCampaign,
+    }).catch(() => {}); // Non-fatal — DB insert already succeeded
 
-  // Conversions API — server-side event for improved match quality (bypasses iOS/ad blocker signal loss)
-  const capiPixelId = process.env.META_PIXEL_ID;
-  const capiToken = process.env.META_CAPI_TOKEN;
-  if (capiPixelId && capiToken) {
-    const userData: Record<string, unknown> = {
-      ph: [sha256(data.customerPhone)],
-    };
-    if (data.customerEmail) {
-      userData.em = [sha256(data.customerEmail)];
-    }
-    if (data.fbclid) {
-      userData.fbc = `fb.1.${Date.now()}.${data.fbclid}`;
-    }
-    fetch(
-      `https://graph.facebook.com/v19.0/${capiPixelId}/events?access_token=${capiToken}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          data: [{
-            event_name: "Lead",
-            event_time: Math.floor(Date.now() / 1000),
-            event_id: data.eventId ?? lead.id,
-            action_source: "website",
-            event_source_url: "https://www.quickfixwindshields.co/booking",
-            user_data: userData,
-            custom_data: {
-              currency: "INR",
-              value: data.quoteAmount ?? 0,
-            },
-          }],
-        }),
+    // Conversions API — server-side event for improved match quality
+    const capiPixelId = process.env.META_PIXEL_ID;
+    const capiToken = process.env.META_CAPI_TOKEN;
+    if (capiPixelId && capiToken) {
+      const userData: Record<string, unknown> = {
+        ph: [sha256(data.customerPhone)],
+      };
+      if (data.customerEmail) {
+        userData.em = [sha256(data.customerEmail)];
       }
-    ).catch(() => {}); // Non-fatal — DB insert already succeeded
-  }
+      if (data.fbclid) {
+        userData.fbc = `fb.1.${Date.now()}.${data.fbclid}`;
+      }
+      await fetch(
+        `https://graph.facebook.com/v19.0/${capiPixelId}/events?access_token=${capiToken}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            data: [{
+              event_name: "Lead",
+              event_time: Math.floor(Date.now() / 1000),
+              event_id: data.eventId ?? lead.id,
+              action_source: "website",
+              event_source_url: "https://www.quickfixwindshields.co/booking",
+              user_data: userData,
+              custom_data: {
+                currency: "INR",
+                value: data.quoteAmount ?? 0,
+              },
+            }],
+          }),
+        }
+      ).catch(() => {});
+    }
+  });
 
   return NextResponse.json({ success: true, referenceId: lead.id }, { status: 201 });
 }

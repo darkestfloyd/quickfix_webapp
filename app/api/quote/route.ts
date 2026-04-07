@@ -22,7 +22,7 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { eq, and } from "drizzle-orm";
 
 const quoteSchema = z.object({
-  year: z.number().int().min(2000).max(2030),
+  year: z.number().int().min(2000).max(2030).optional(),
   make: z.string().min(1).max(100),
   model: z.string().min(1).max(100),
 });
@@ -61,14 +61,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid vehicle data", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { year, make, model } = parsed.data;
+  const { make, model } = parsed.data;
 
   const [vehicle] = await db
     .select()
     .from(vehiclePricing)
     .where(
       and(
-        eq(vehiclePricing.year, year),
         eq(vehiclePricing.make, make),
         eq(vehiclePricing.model, model)
       )
@@ -102,7 +101,6 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   const vehicles = await db
     .select({
-      year: vehiclePricing.year,
       make: vehiclePricing.make,
       model: vehiclePricing.model,
       currentPrice: vehiclePricing.currentPrice,
@@ -110,10 +108,10 @@ export async function GET() {
     .from(vehiclePricing)
     .orderBy(vehiclePricing.make, vehiclePricing.model);
 
-  const grouped: Record<string, { year: number; model: string }[]> = {};
+  const grouped: Record<string, string[]> = {};
   for (const v of vehicles) {
     if (!grouped[v.make]) grouped[v.make] = [];
-    grouped[v.make].push({ year: v.year, model: v.model });
+    grouped[v.make].push(v.model);
   }
 
   return NextResponse.json(

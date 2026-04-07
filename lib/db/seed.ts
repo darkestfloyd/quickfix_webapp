@@ -3,53 +3,58 @@
  *
  * Safe to re-run: uses onConflictDoNothing() on all inserts.
  *
- * To add vehicles:  append to VEHICLES array below
- * To add PIN codes: append to PIN_CODES array below
- * To extend slots:  increase the loop limit in generateSlots()
+ * Vehicle data is loaded from lib/db/car_list_india.csv (Make, Model, Category).
+ * Base prices are assigned by category tier — see getBasePrice() below.
+ * To extend slots: increase the loop limit in generateSlots()
  */
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { vehiclePricing, pricingMarkup, servicePinCoverage, availabilitySlots } from "./schema";
 import { istDateStr } from "../utils";
+import * as fs from "fs";
+import * as path from "path";
+import * as readline from "readline";
 import * as dotenv from "dotenv";
 
 dotenv.config({ path: ".env.local" });
 
-// --- ADD NEW VEHICLES HERE ---
-// basePrice is the cost before markup. currentPrice = basePrice * (1 + markup/100)
-// Markup is defined in MARKUP_PERCENTAGE below (currently 15%)
-const VEHICLES = [
-  // Maruti Suzuki
-  { year: 2024, make: "Maruti Suzuki", model: "Swift", basePrice: 3800 },
-  { year: 2024, make: "Maruti Suzuki", model: "Baleno", basePrice: 4000 },
-  { year: 2024, make: "Maruti Suzuki", model: "Ertiga", basePrice: 4500 },
-  { year: 2024, make: "Maruti Suzuki", model: "Brezza", basePrice: 4800 },
-  { year: 2024, make: "Maruti Suzuki", model: "Dzire", basePrice: 3800 },
-  // Hyundai
-  { year: 2024, make: "Hyundai", model: "i20", basePrice: 4200 },
-  { year: 2024, make: "Hyundai", model: "Creta", basePrice: 6500 },
-  { year: 2024, make: "Hyundai", model: "Verna", basePrice: 5800 },
-  { year: 2024, make: "Hyundai", model: "Tucson", basePrice: 9000 },
-  // Tata
-  { year: 2024, make: "Tata", model: "Nexon", basePrice: 5500 },
-  { year: 2024, make: "Tata", model: "Harrier", basePrice: 8500 },
-  { year: 2024, make: "Tata", model: "Punch", basePrice: 4200 },
-  // Honda
-  { year: 2024, make: "Honda", model: "City", basePrice: 5500 },
-  { year: 2024, make: "Honda", model: "Amaze", basePrice: 4500 },
-  // Toyota
-  { year: 2024, make: "Toyota", model: "Fortuner", basePrice: 14000 },
-  { year: 2024, make: "Toyota", model: "Innova Crysta", basePrice: 9500 },
-  { year: 2024, make: "Toyota", model: "Hyryder", basePrice: 7500 },
-  // Mahindra
-  { year: 2024, make: "Mahindra", model: "Scorpio-N", basePrice: 8000 },
-  { year: 2024, make: "Mahindra", model: "XUV700", basePrice: 10000 },
-  { year: 2024, make: "Mahindra", model: "Thar", basePrice: 7000 },
-];
-
 // Applied to all vehicles: currentPrice = basePrice * (1 + MARKUP_PERCENTAGE/100)
-// Change this value and re-seed to globally adjust prices
 const MARKUP_PERCENTAGE = 15; // 15%
+
+// Assign base windshield replacement price by vehicle category
+function getBasePrice(category: string): number {
+  const cat = category.toLowerCase();
+  if (cat.includes("ultra-luxury") || cat.includes("supercar") || cat.includes("hypercar")) return 18000;
+  if (cat.includes("luxury") || cat.includes("grand tourer")) return 12000;
+  if (cat.includes("performance")) return 10000;
+  if (cat.includes("premium") || cat.includes("electric")) return 8500;
+  if (cat.includes("compact") || cat.includes("hatchback") || cat.includes("micro") || cat.includes("mini")) return 3800;
+  return 5500; // default: mid-range (sedan, suv, mpv, crossover, van, pickup, etc.)
+}
+
+async function loadVehiclesFromCSV(): Promise<{ make: string; model: string; vehicleCategory: string; basePrice: number }[]> {
+  const csvPath = path.join(process.cwd(), "lib/db/car_list_india.csv");
+  const vehicles: { make: string; model: string; vehicleCategory: string; basePrice: number }[] = [];
+
+  const rl = readline.createInterface({
+    input: fs.createReadStream(csvPath),
+    crlfDelay: Infinity,
+  });
+
+  let isHeader = true;
+  for await (const line of rl) {
+    if (isHeader) { isHeader = false; continue; }
+    const parts = line.split(",");
+    if (parts.length < 3) continue;
+    const make = parts[0].trim();
+    const model = parts[1].trim();
+    const category = parts.slice(2).join(",").trim(); // handle commas in category
+    if (!make || !model) continue;
+    vehicles.push({ make, model, vehicleCategory: category, basePrice: getBasePrice(category) });
+  }
+
+  return vehicles;
+}
 
 // --- ADD NEW SERVICE AREAS HERE ---
 // surcharge (INR) is added on top of the vehicle quote for harder-to-reach areas
@@ -101,18 +106,25 @@ async function main() {
   const sql = neon(databaseUrl);
   const db = drizzle(sql);
 
+  console.log("Loading vehicles from CSV...");
+  const csvVehicles = await loadVehiclesFromCSV();
+  console.log(`Loaded ${csvVehicles.length} vehicles from car_list_india.csv`);
+
   console.log("Seeding vehicle pricing...");
-  const vehicleRows = VEHICLES.map((v) => {
+  const vehicleRows = csvVehicles.map((v) => {
     const markup = Math.round(v.basePrice * (MARKUP_PERCENTAGE / 100));
     return {
-      year: v.year,
       make: v.make,
       model: v.model,
+      vehicleCategory: v.vehicleCategory,
       basePrice: String(v.basePrice),
       currentPrice: String(v.basePrice + markup),
     };
   });
-  await db.insert(vehiclePricing).values(vehicleRows).onConflictDoNothing();
+  // Insert in batches of 50
+  for (let i = 0; i < vehicleRows.length; i += 50) {
+    await db.insert(vehiclePricing).values(vehicleRows.slice(i, i + 50)).onConflictDoNothing();
+  }
 
   console.log("Seeding pricing markup...");
   await db

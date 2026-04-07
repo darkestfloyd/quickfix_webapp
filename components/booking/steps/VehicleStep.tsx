@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,7 +27,6 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 interface VehicleOption {
-  year: number;
   make: string;
   model: string;
   currentPrice: string;
@@ -45,6 +45,7 @@ const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string; disa
 export function VehicleStep() {
   const { dispatch, goToStep, sessionId } = useBooking();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
+  const [isOther, setIsOther] = useState(false);
 
   const {
     handleSubmit,
@@ -66,11 +67,21 @@ export function VehicleStep() {
       .catch(() => {});
   }, []);
 
-  const allMakes = Array.from(new Set(vehicles.map((v) => v.make))).sort();
-  const otherMakes = allMakes.filter((m) => !GRID_MAKES.includes(m));
   const models = Array.from(new Set(
     vehicles.filter((v) => v.make === selectedMake).map((v) => v.model)
   )).sort();
+
+  const handleGridMake = (make: string) => {
+    setIsOther(false);
+    setValue("make", make, { shouldValidate: true });
+    setValue("model", "");
+  };
+
+  const handleOtherClick = () => {
+    setIsOther(true);
+    setValue("make", "", { shouldValidate: false });
+    setValue("model", "");
+  };
 
   const onSubmit = (data: FormData) => {
     dispatch({
@@ -111,13 +122,10 @@ export function VehicleStep() {
             <button
               key={make}
               type="button"
-              onClick={() => {
-                setValue("make", make, { shouldValidate: true });
-                setValue("model", "");
-              }}
+              onClick={() => handleGridMake(make)}
               className={cn(
                 "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
-                selectedMake === make
+                !isOther && selectedMake === make
                   ? "border-black bg-black text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
               )}
@@ -125,56 +133,60 @@ export function VehicleStep() {
               {make}
             </button>
           ))}
-          {/* Other makes via select */}
-          <div className={cn(
-            "rounded-lg border transition-colors",
-            selectedMake && !GRID_MAKES.includes(selectedMake)
-              ? "border-black bg-black"
-              : "border-gray-200 bg-white"
-          )}>
-            <select
-              className={cn(
-                "h-full w-full rounded-lg bg-transparent px-3 py-3 text-sm font-medium outline-none",
-                selectedMake && !GRID_MAKES.includes(selectedMake) ? "text-white" : "text-gray-500"
-              )}
-              value={GRID_MAKES.includes(selectedMake ?? "") ? "" : (selectedMake ?? "")}
-              onChange={(e) => {
-                if (e.target.value) {
-                  setValue("make", e.target.value, { shouldValidate: true });
-                  setValue("model", "");
-                }
-              }}
-            >
-              <option value="">Other</option>
-              {otherMakes.map((m) => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-          </div>
+          {/* Other — opens freeform text inputs */}
+          <button
+            type="button"
+            onClick={handleOtherClick}
+            className={cn(
+              "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
+              isOther
+                ? "border-black bg-black text-white"
+                : "border-gray-200 bg-white text-gray-500 hover:border-gray-400"
+            )}
+          >
+            Other
+          </button>
         </div>
+        {/* Freeform make/model inputs for "Other" */}
+        {isOther && (
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <Input
+              placeholder="Make (e.g. Kia)"
+              className="h-11 rounded-lg border-gray-200 text-sm"
+              onChange={(e) => setValue("make", e.target.value, { shouldValidate: true })}
+            />
+            <Input
+              placeholder="Model (e.g. Seltos)"
+              className="h-11 rounded-lg border-gray-200 text-sm"
+              onChange={(e) => setValue("model", e.target.value, { shouldValidate: true })}
+            />
+          </div>
+        )}
         {errors.make && <p className="text-xs text-red-500">{errors.make.message}</p>}
       </div>
 
-      {/* Step 02: Model */}
-      <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-          02. Model
-        </p>
-        <Select
-          disabled={!selectedMake}
-          onValueChange={(v) => setValue("model", v, { shouldValidate: true })}
-        >
-          <SelectTrigger className="h-12 rounded-lg border-gray-200">
-            <SelectValue placeholder={selectedMake ? "Choose Model" : "Select make first"} />
-          </SelectTrigger>
-          <SelectContent>
-            {models.map((m) => (
-              <SelectItem key={m} value={m}>{m}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {errors.model && <p className="text-xs text-red-500">{errors.model.message}</p>}
-      </div>
+      {/* Step 02: Model — hidden when "Other" is selected (model captured via text input above) */}
+      {!isOther && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+            02. Model
+          </p>
+          <Select
+            disabled={!selectedMake}
+            onValueChange={(v) => setValue("model", v, { shouldValidate: true })}
+          >
+            <SelectTrigger className="h-12 rounded-lg border-gray-200">
+              <SelectValue placeholder={selectedMake ? "Choose Model" : "Select make first"} />
+            </SelectTrigger>
+            <SelectContent>
+              {models.map((m) => (
+                <SelectItem key={m} value={m}>{m}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {errors.model && <p className="text-xs text-red-500">{errors.model.message}</p>}
+        </div>
+      )}
 
       {/* Step 03: Year */}
       <div className="space-y-2">
@@ -182,7 +194,7 @@ export function VehicleStep() {
           03. Manufacturing Year
         </p>
         <Select
-          disabled={!selectedModel}
+          disabled={!isOther && !selectedModel}
           onValueChange={(v) => setValue("year", parseInt(v), { shouldValidate: true })}
         >
           <SelectTrigger className="h-12 rounded-lg border-gray-200">
@@ -265,7 +277,7 @@ export function VehicleStep() {
         variant="black"
         size="lg"
         className="w-full"
-        disabled={!selectedModel || !selectedGlass}
+        disabled={(!isOther && !selectedModel) || !selectedGlass}
       >
         CONTINUE →
       </Button>

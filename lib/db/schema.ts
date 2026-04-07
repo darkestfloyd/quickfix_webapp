@@ -6,7 +6,7 @@
  *   pnpm db:migrate    ← applies it to Neon
  *
  * Tables:
- *   vehicle_pricing       — make/model/year → base + current price (INR)
+ *   vehicle_pricing       — make/model → base + current price (INR); year is UI-only
  *   pricing_markup        — global markup rules (currently 15% on all vehicles)
  *   service_pin_coverage  — which 6-digit PIN codes we serve
  *   availability_slots    — 2-hour appointment windows (Mon–Sat, seeded for next 30 days)
@@ -38,13 +38,13 @@ export const vehiclePricing = pgTable(
   "vehicle_pricing",
   {
     id: serial("id").primaryKey(),
-    year: integer("year").notNull(),
     make: varchar("make", { length: 100 }).notNull(),
     model: varchar("model", { length: 100 }).notNull(),
+    vehicleCategory: varchar("vehicle_category", { length: 100 }),
     basePrice: numeric("base_price", { precision: 10, scale: 2 }).notNull(),
     currentPrice: numeric("current_price", { precision: 10, scale: 2 }).notNull(),
   },
-  (t) => [uniqueIndex("vehicle_pricing_year_make_model_idx").on(t.year, t.make, t.model)]
+  (t) => [uniqueIndex("vehicle_pricing_make_model_idx").on(t.make, t.model)]
 );
 
 export const pricingMarkup = pgTable("pricing_markup", {

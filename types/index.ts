@@ -1,8 +1,8 @@
 export interface VehiclePricing {
   id: number;
-  year: number;
   make: string;
   model: string;
+  vehicleCategory: string | null;
   basePrice: string;
   currentPrice: string;
 }

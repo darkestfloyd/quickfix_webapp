@@ -45,10 +45,8 @@ const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string; disa
 export function VehicleStep() {
   const { dispatch, goToStep, sessionId } = useBooking();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
-  // 'none'    — grid make selected (or nothing yet)
-  // 'picker'  — Other tile clicked; dropdown of DB makes visible
-  // 'freeform'— "Other (not listed)" chosen; freeform text inputs visible
-  const [otherState, setOtherState] = useState<"none" | "picker" | "freeform">("none");
+  // true when user selects "Other (not listed)" from the make dropdown
+  const [isFreeform, setIsFreeform] = useState(false);
 
   const {
     handleSubmit,
@@ -78,24 +76,18 @@ export function VehicleStep() {
   )).sort();
 
   const handleGridMake = (make: string) => {
-    setOtherState("none");
+    setIsFreeform(false);
     setValue("make", make, { shouldValidate: true });
     setValue("model", "");
   };
 
-  const handleOtherTileClick = () => {
-    setOtherState("picker");
-    setValue("make", "", { shouldValidate: false });
-    setValue("model", "");
-  };
-
-  const handleOtherPickerChange = (value: string) => {
+  const handleOtherDropdownChange = (value: string) => {
     if (value === "__other__") {
-      setOtherState("freeform");
+      setIsFreeform(true);
       setValue("make", "", { shouldValidate: false });
       setValue("model", "");
     } else {
-      setOtherState("picker");
+      setIsFreeform(false);
       setValue("make", value, { shouldValidate: true });
       setValue("model", "");
     }
@@ -143,7 +135,7 @@ export function VehicleStep() {
               onClick={() => handleGridMake(make)}
               className={cn(
                 "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
-                otherState === "none" && selectedMake === make
+                !isFreeform && selectedMake === make
                   ? "border-black bg-black text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
               )}
@@ -151,64 +143,44 @@ export function VehicleStep() {
               {make}
             </button>
           ))}
-          {/* Other tile — opens picker dropdown */}
-          <button
-            type="button"
-            onClick={handleOtherTileClick}
-            className={cn(
-              "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
-              otherState !== "none"
-                ? "border-black bg-black text-white"
-                : "border-gray-200 bg-white text-gray-500 hover:border-gray-400"
-            )}
-          >
-            Other
-          </button>
         </div>
 
-        {/* Other expansion: picker dropdown + optional freeform inputs */}
-        {otherState !== "none" && (
-          <div className="space-y-3">
-            <Select
-              onValueChange={handleOtherPickerChange}
-              defaultValue={
-                otherState === "freeform"
-                  ? "__other__"
-                  : selectedMake || undefined
-              }
-            >
-              <SelectTrigger className="h-12 rounded-lg border-gray-200">
-                <SelectValue placeholder="Select make" />
-              </SelectTrigger>
-              <SelectContent>
-                {otherMakes.map((m) => (
-                  <SelectItem key={m} value={m}>{m}</SelectItem>
-                ))}
-                <SelectItem value="__other__">Other (not listed)</SelectItem>
-              </SelectContent>
-            </Select>
+        {/* Dropdown for all other DB makes + "Other (not listed)" */}
+        <Select
+          onValueChange={handleOtherDropdownChange}
+          value={isFreeform ? "__other__" : (!GRID_MAKES.includes(selectedMake ?? "") && selectedMake) ? selectedMake : undefined}
+        >
+          <SelectTrigger className="h-12 rounded-lg border-gray-200">
+            <SelectValue placeholder="Other make…" />
+          </SelectTrigger>
+          <SelectContent>
+            {otherMakes.map((m) => (
+              <SelectItem key={m} value={m}>{m}</SelectItem>
+            ))}
+            <SelectItem value="__other__">Other (not listed)</SelectItem>
+          </SelectContent>
+        </Select>
 
-            {otherState === "freeform" && (
-              <div className="grid grid-cols-2 gap-2">
-                <Input
-                  placeholder="Make (e.g. Kia)"
-                  className="h-11 rounded-lg border-gray-200 text-sm"
-                  onChange={(e) => setValue("make", e.target.value, { shouldValidate: true })}
-                />
-                <Input
-                  placeholder="Model (e.g. Seltos)"
-                  className="h-11 rounded-lg border-gray-200 text-sm"
-                  onChange={(e) => setValue("model", e.target.value, { shouldValidate: true })}
-                />
-              </div>
-            )}
+        {/* Freeform inputs — only when "Other (not listed)" is selected */}
+        {isFreeform && (
+          <div className="grid grid-cols-2 gap-2">
+            <Input
+              placeholder="Make (e.g. Kia)"
+              className="h-11 rounded-lg border-gray-200 text-sm"
+              onChange={(e) => setValue("make", e.target.value, { shouldValidate: true })}
+            />
+            <Input
+              placeholder="Model (e.g. Seltos)"
+              className="h-11 rounded-lg border-gray-200 text-sm"
+              onChange={(e) => setValue("model", e.target.value, { shouldValidate: true })}
+            />
           </div>
         )}
         {errors.make && <p className="text-xs text-red-500">{errors.make.message}</p>}
       </div>
 
       {/* Step 02: Model — hidden in freeform mode (model captured via text input above) */}
-      {otherState !== "freeform" && (
+      {!isFreeform && (
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
             02. Model
@@ -236,7 +208,7 @@ export function VehicleStep() {
           03. Manufacturing Year
         </p>
         <Select
-          disabled={otherState !== "freeform" && !selectedModel}
+          disabled={!isFreeform && !selectedModel}
           onValueChange={(v) => setValue("year", parseInt(v), { shouldValidate: true })}
         >
           <SelectTrigger className="h-12 rounded-lg border-gray-200">
@@ -319,7 +291,7 @@ export function VehicleStep() {
         variant="black"
         size="lg"
         className="w-full"
-        disabled={(!selectedModel && otherState !== "freeform") || !selectedGlass}
+        disabled={(!selectedModel && !isFreeform) || !selectedGlass}
       >
         CONTINUE →
       </Button>

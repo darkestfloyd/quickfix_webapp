@@ -30,11 +30,9 @@ export function trackStepComplete(step: number, stepName: string) {
   fbq("trackCustom", "BookingStepComplete", { step, stepName });
 }
 
-export function trackLeadSubmit(quoteAmount: number, eventId: string) {
+export function trackLeadSubmit(eventId: string) {
   fbq("track", "Lead", {
     content_name: "Booking Submitted",
-    currency: "INR",
-    value: quoteAmount,
     eventID: eventId,
   });
 }

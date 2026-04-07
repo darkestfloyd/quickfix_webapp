@@ -144,8 +144,7 @@ export async function POST(req: NextRequest) {
               event_source_url: "https://www.quickfixwindshields.co/booking",
               user_data: userData,
               custom_data: {
-                currency: "INR",
-                value: data.quoteAmount ?? 0,
+                content_name: "Booking Submitted",
               },
             }],
           }),

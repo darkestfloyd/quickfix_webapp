@@ -47,7 +47,7 @@ export function ConfirmationStep() {
         if (data.success && data.referenceId) {
           setReferenceId(data.referenceId);
           dispatch({ type: "SET_REFERENCE", referenceId: data.referenceId });
-          trackLeadSubmit(0, eventId);
+          trackLeadSubmit(eventId);
           trackStepComplete(3, "Confirmation");
           fetch("/api/track", {
             method: "POST",

@@ -34,8 +34,8 @@ interface VehicleOption {
 
 const YEARS = Array.from({ length: 10 }, (_, i) => 2024 - i);
 
-// Primary makes shown in grid; others fall through to "Other" selection
-const GRID_MAKES = ["Maruti Suzuki", "Hyundai", "Tata", "Honda", "Toyota"];
+// Primary makes shown in grid; others appear in the "Other" picker dropdown
+const GRID_MAKES = ["Maruti Suzuki", "Hyundai", "BMW", "Honda", "Toyota"];
 
 const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string; disabled?: boolean }[] = [
   { value: "front", label: "Front Windshield", sub: "Includes rain sensor calibration" },
@@ -45,7 +45,10 @@ const GLASS_OPTIONS: { value: "front" | "rear"; label: string; sub: string; disa
 export function VehicleStep() {
   const { dispatch, goToStep, sessionId } = useBooking();
   const [vehicles, setVehicles] = useState<VehicleOption[]>([]);
-  const [isOther, setIsOther] = useState(false);
+  // 'none'    — grid make selected (or nothing yet)
+  // 'picker'  — Other tile clicked; dropdown of DB makes visible
+  // 'freeform'— "Other (not listed)" chosen; freeform text inputs visible
+  const [otherState, setOtherState] = useState<"none" | "picker" | "freeform">("none");
 
   const {
     handleSubmit,
@@ -56,7 +59,6 @@ export function VehicleStep() {
 
   const selectedMake = watch("make");
   const selectedModel = watch("model");
-  const selectedYear = watch("year");
   const selectedGlass = watch("glassType");
 
   // Load vehicles on mount — response is HTTP-cached for 1 hour
@@ -67,20 +69,36 @@ export function VehicleStep() {
       .catch(() => {});
   }, []);
 
+  const otherMakes = Array.from(new Set(vehicles.map((v) => v.make)))
+    .filter((m) => !GRID_MAKES.includes(m))
+    .sort();
+
   const models = Array.from(new Set(
     vehicles.filter((v) => v.make === selectedMake).map((v) => v.model)
   )).sort();
 
   const handleGridMake = (make: string) => {
-    setIsOther(false);
+    setOtherState("none");
     setValue("make", make, { shouldValidate: true });
     setValue("model", "");
   };
 
-  const handleOtherClick = () => {
-    setIsOther(true);
+  const handleOtherTileClick = () => {
+    setOtherState("picker");
     setValue("make", "", { shouldValidate: false });
     setValue("model", "");
+  };
+
+  const handleOtherPickerChange = (value: string) => {
+    if (value === "__other__") {
+      setOtherState("freeform");
+      setValue("make", "", { shouldValidate: false });
+      setValue("model", "");
+    } else {
+      setOtherState("picker");
+      setValue("make", value, { shouldValidate: true });
+      setValue("model", "");
+    }
   };
 
   const onSubmit = (data: FormData) => {
@@ -125,7 +143,7 @@ export function VehicleStep() {
               onClick={() => handleGridMake(make)}
               className={cn(
                 "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
-                !isOther && selectedMake === make
+                otherState === "none" && selectedMake === make
                   ? "border-black bg-black text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
               )}
@@ -133,13 +151,13 @@ export function VehicleStep() {
               {make}
             </button>
           ))}
-          {/* Other — opens freeform text inputs */}
+          {/* Other tile — opens picker dropdown */}
           <button
             type="button"
-            onClick={handleOtherClick}
+            onClick={handleOtherTileClick}
             className={cn(
               "rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors",
-              isOther
+              otherState !== "none"
                 ? "border-black bg-black text-white"
                 : "border-gray-200 bg-white text-gray-500 hover:border-gray-400"
             )}
@@ -147,26 +165,50 @@ export function VehicleStep() {
             Other
           </button>
         </div>
-        {/* Freeform make/model inputs for "Other" */}
-        {isOther && (
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Input
-              placeholder="Make (e.g. Kia)"
-              className="h-11 rounded-lg border-gray-200 text-sm"
-              onChange={(e) => setValue("make", e.target.value, { shouldValidate: true })}
-            />
-            <Input
-              placeholder="Model (e.g. Seltos)"
-              className="h-11 rounded-lg border-gray-200 text-sm"
-              onChange={(e) => setValue("model", e.target.value, { shouldValidate: true })}
-            />
+
+        {/* Other expansion: picker dropdown + optional freeform inputs */}
+        {otherState !== "none" && (
+          <div className="space-y-3">
+            <Select
+              onValueChange={handleOtherPickerChange}
+              defaultValue={
+                otherState === "freeform"
+                  ? "__other__"
+                  : selectedMake || undefined
+              }
+            >
+              <SelectTrigger className="h-12 rounded-lg border-gray-200">
+                <SelectValue placeholder="Select make" />
+              </SelectTrigger>
+              <SelectContent>
+                {otherMakes.map((m) => (
+                  <SelectItem key={m} value={m}>{m}</SelectItem>
+                ))}
+                <SelectItem value="__other__">Other (not listed)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {otherState === "freeform" && (
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  placeholder="Make (e.g. Kia)"
+                  className="h-11 rounded-lg border-gray-200 text-sm"
+                  onChange={(e) => setValue("make", e.target.value, { shouldValidate: true })}
+                />
+                <Input
+                  placeholder="Model (e.g. Seltos)"
+                  className="h-11 rounded-lg border-gray-200 text-sm"
+                  onChange={(e) => setValue("model", e.target.value, { shouldValidate: true })}
+                />
+              </div>
+            )}
           </div>
         )}
         {errors.make && <p className="text-xs text-red-500">{errors.make.message}</p>}
       </div>
 
-      {/* Step 02: Model — hidden when "Other" is selected (model captured via text input above) */}
-      {!isOther && (
+      {/* Step 02: Model — hidden in freeform mode (model captured via text input above) */}
+      {otherState !== "freeform" && (
         <div className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
             02. Model
@@ -194,7 +236,7 @@ export function VehicleStep() {
           03. Manufacturing Year
         </p>
         <Select
-          disabled={!isOther && !selectedModel}
+          disabled={otherState !== "freeform" && !selectedModel}
           onValueChange={(v) => setValue("year", parseInt(v), { shouldValidate: true })}
         >
           <SelectTrigger className="h-12 rounded-lg border-gray-200">
@@ -277,7 +319,7 @@ export function VehicleStep() {
         variant="black"
         size="lg"
         className="w-full"
-        disabled={(!isOther && !selectedModel) || !selectedGlass}
+        disabled={(!selectedModel && otherState !== "freeform") || !selectedGlass}
       >
         CONTINUE →
       </Button>

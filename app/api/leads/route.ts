@@ -120,6 +120,7 @@ export async function POST(req: NextRequest) {
     // Conversions API — server-side event for improved match quality
     const capiPixelId = process.env.META_PIXEL_ID;
     const capiToken = process.env.META_CAPI_TOKEN;
+    console.log("[CAPI] META_PIXEL_ID set:", !!capiPixelId, "META_CAPI_TOKEN set:", !!capiToken);
     if (capiPixelId && capiToken) {
       const userData: Record<string, unknown> = {
         ph: [sha256(data.customerPhone)],
@@ -130,26 +131,36 @@ export async function POST(req: NextRequest) {
       if (data.fbclid) {
         userData.fbc = `fb.1.${Date.now()}.${data.fbclid}`;
       }
-      await fetch(
-        `https://graph.facebook.com/v19.0/${capiPixelId}/events?access_token=${capiToken}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            data: [{
-              event_name: "Lead",
-              event_time: Math.floor(Date.now() / 1000),
-              event_id: data.eventId ?? lead.id,
-              action_source: "website",
-              event_source_url: "https://www.quickfixwindshields.co/booking",
-              user_data: userData,
-              custom_data: {
-                content_name: "Booking Submitted",
-              },
-            }],
-          }),
-        }
-      ).catch(() => {});
+      const capiPayload = {
+        data: [{
+          event_name: "Lead",
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: data.eventId ?? lead.id,
+          action_source: "website",
+          event_source_url: "https://www.quickfixwindshields.co/booking",
+          user_data: userData,
+          custom_data: {
+            content_name: "Booking Submitted",
+          },
+        }],
+      };
+      console.log("[CAPI] Sending event:", JSON.stringify(capiPayload));
+      try {
+        const capiRes = await fetch(
+          `https://graph.facebook.com/v19.0/${capiPixelId}/events?access_token=${capiToken}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(capiPayload),
+          }
+        );
+        const capiBody = await capiRes.text();
+        console.log("[CAPI] Response:", capiRes.status, capiBody);
+      } catch (err) {
+        console.error("[CAPI] Fetch error:", err);
+      }
+    } else {
+      console.warn("[CAPI] Skipped — missing env vars");
     }
   });
 

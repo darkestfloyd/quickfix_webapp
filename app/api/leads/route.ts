@@ -157,7 +157,6 @@ export async function POST(req: NextRequest) {
           event_time: Math.floor(Date.now() / 1000),
           event_id: data.eventId ?? lead.id,
           action_source: "website",
-          event_source_url: "https://www.quickfixwindshields.co/booking",
           user_data: userData,
           custom_data: {
             content_name: "Booking Submitted",

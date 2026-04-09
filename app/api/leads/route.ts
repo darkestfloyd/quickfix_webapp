@@ -140,6 +140,17 @@ export async function POST(req: NextRequest) {
       if (fbpCookie) {
         userData.fbp = fbpCookie;
       }
+
+      // IP and user agent improve match quality, especially for ad-blocked users (sent unhashed per Meta spec)
+      const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+      const clientUa = req.headers.get("user-agent");
+      if (clientIp) {
+        userData.client_ip_address = clientIp;
+      }
+      if (clientUa) {
+        userData.client_user_agent = clientUa;
+      }
+
       const capiPayload = {
         data: [{
           event_name: "Lead",

@@ -120,7 +120,6 @@ export async function POST(req: NextRequest) {
     // Conversions API — server-side event for improved match quality
     const capiPixelId = process.env.META_PIXEL_ID;
     const capiToken = process.env.META_CAPI_TOKEN;
-    console.log("[CAPI] META_PIXEL_ID set:", !!capiPixelId, "META_CAPI_TOKEN set:", !!capiToken);
     if (capiPixelId && capiToken) {
       const userData: Record<string, unknown> = {
         ph: [sha256(data.customerPhone)],
@@ -163,9 +162,8 @@ export async function POST(req: NextRequest) {
           },
         }],
       };
-      console.log("[CAPI] Sending event:", JSON.stringify(capiPayload));
       try {
-        const capiRes = await fetch(
+        await fetch(
           `https://graph.facebook.com/v25.0/${capiPixelId}/events?access_token=${capiToken}`,
           {
             method: "POST",
@@ -173,13 +171,9 @@ export async function POST(req: NextRequest) {
             body: JSON.stringify(capiPayload),
           }
         );
-        const capiBody = await capiRes.text();
-        console.log("[CAPI] Response:", capiRes.status, capiBody);
-      } catch (err) {
-        console.error("[CAPI] Fetch error:", err);
+      } catch {
+        // Non-fatal — lead is already persisted
       }
-    } else {
-      console.warn("[CAPI] Skipped — missing env vars");
     }
   });
 

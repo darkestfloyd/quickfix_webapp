@@ -128,8 +128,17 @@ export async function POST(req: NextRequest) {
       if (data.customerEmail) {
         userData.em = [sha256(data.customerEmail)];
       }
-      if (data.fbclid) {
-        userData.fbc = `fb.1.${Date.now()}.${data.fbclid}`;
+
+      // Read _fbc and _fbp cookies set by Meta Pixel SDK (preferred over manual construction)
+      const cookieHeader = req.headers.get("cookie") ?? "";
+      const fbcCookie = cookieHeader.match(/(?:^|;\s*)_fbc=([^;]+)/)?.[1];
+      const fbpCookie = cookieHeader.match(/(?:^|;\s*)_fbp=([^;]+)/)?.[1];
+
+      if (fbcCookie) {
+        userData.fbc = fbcCookie;
+      }
+      if (fbpCookie) {
+        userData.fbp = fbpCookie;
       }
       const capiPayload = {
         data: [{

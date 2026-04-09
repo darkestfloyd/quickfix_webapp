@@ -15,7 +15,7 @@ export function trackPageView() {
 }
 
 export function trackCTAClick() {
-  fbq("track", "InitiateCheckout", { content_name: "CTA Click - Get Free Quote" });
+  fbq("trackCustom", "CTAClick", { content_name: "Get Free Quote" });
 }
 
 export function trackStepComplete(step: number, stepName: string) {

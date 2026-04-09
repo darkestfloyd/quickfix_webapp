@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
       console.log("[CAPI] Sending event:", JSON.stringify(capiPayload));
       try {
         const capiRes = await fetch(
-          `https://graph.facebook.com/v19.0/${capiPixelId}/events?access_token=${capiToken}`,
+          `https://graph.facebook.com/v25.0/${capiPixelId}/events?access_token=${capiToken}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },

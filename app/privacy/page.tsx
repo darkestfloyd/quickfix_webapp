@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Privacy Policy for QuickFix Windshields. Learn how we collect, use, and protect your personal information.",
 };
 
-const LAST_UPDATED = "March 2026";
+const LAST_UPDATED = "April 2026";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -76,30 +76,41 @@ export default function PrivacyPage() {
           </p>
         </Section>
 
-        <Section title="Meta Pixel & Analytics">
+        <Section title="Meta Pixel & Conversions API">
           <p className="text-sm">
-            Our website uses the Meta Pixel (Facebook Pixel), a tracking technology provided by Meta Platforms, Inc.
-            The pixel fires standard events (such as page views, quote views, and lead submissions) to help us measure
-            the performance of our Facebook and Instagram advertising. This may involve the collection of anonymised
-            browsing data by Meta on our behalf, subject to{" "}
+            Our website uses the Meta Pixel (Facebook Pixel) and the Meta Conversions API (CAPI), tracking technologies
+            provided by Meta Platforms, Inc. The pixel fires standard browser-side events (such as page views and lead
+            submissions) while the Conversions API sends corresponding server-side events to help us measure the
+            performance of our Facebook and Instagram advertising. This is subject to{" "}
             <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener noreferrer" className="text-black underline underline-offset-2">
               Meta&apos;s Privacy Policy
             </a>.
           </p>
           <p className="text-sm">
-            We do not transmit your name, phone number, or address to Meta. Only aggregated event signals are sent.
+            To measure ad effectiveness, we share the following data with Meta via the Conversions API in a
+            privacy-preserving manner: your phone number and email address are <strong>cryptographically hashed
+            (SHA-256)</strong> before transmission, meaning Meta receives an irreversible fingerprint, not the original
+            values. Your IP address and browser user agent string are also shared to enable event matching. Meta uses
+            this data solely for ad attribution and measurement, not for independent profiling.
+          </p>
+          <p className="text-sm">
+            The Meta Pixel may set first-party cookies (<code>_fbp</code>, <code>_fbc</code>) on your browser to link
+            your visit to advertising interactions. These cookies are read server-side when you submit a booking to
+            improve attribution accuracy.
           </p>
         </Section>
 
         <Section title="Cookies & Session Storage">
           <p className="text-sm">
-            We do not set persistent cookies for tracking purposes. We use your browser&apos;s <strong>session storage</strong> to
-            temporarily hold your booking progress (vehicle, address, appointment details) while you complete the booking
-            form. This data is automatically cleared when you close the browser tab and never stored on our servers until
-            you explicitly submit the booking form.
+            We use your browser&apos;s <strong>session storage</strong> to temporarily hold your booking progress
+            (vehicle, address, appointment details) while you complete the booking form. This data is automatically
+            cleared when you close the browser tab and is never stored on our servers until you explicitly submit the
+            booking form.
           </p>
           <p className="text-sm">
-            Third-party scripts (Meta Pixel) may set their own cookies in accordance with their respective policies.
+            The Meta Pixel sets first-party cookies (<code>_fbp</code> for browser identification and <code>_fbc</code> for
+            click attribution) to connect your visit to advertising campaigns. These cookies persist across sessions and
+            are used both by the pixel in your browser and by our server-side Conversions API integration.
           </p>
         </Section>
 

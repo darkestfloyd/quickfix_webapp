@@ -37,8 +37,13 @@ DATABASE_URL=postgres://user:password@ep-xxx.region.aws.neon.tech/quickfix?sslmo
 UPSTASH_REDIS_REST_URL=https://xxx.upstash.io
 UPSTASH_REDIS_REST_TOKEN=xxx
 
-# Meta Pixel — swap placeholder before launch
+# Meta Pixel (browser-side) — swap placeholder before launch
 NEXT_PUBLIC_META_PIXEL_ID=PLACEHOLDER_PIXEL_ID
+
+# Meta Conversions API (server-side) — required for CAPI events
+# Get these from Meta Events Manager > Settings > Conversions API
+META_PIXEL_ID=your_pixel_id_here
+META_CAPI_TOKEN=your_conversions_api_access_token_here
 
 # App base URL
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
@@ -275,7 +280,9 @@ Under **Settings → Environment Variables**, add everything from `.env.example`
 | `DATABASE_URL` | Your Neon connection string |
 | `UPSTASH_REDIS_REST_URL` | Upstash REST URL |
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash token |
-| `NEXT_PUBLIC_META_PIXEL_ID` | Real Pixel ID |
+| `NEXT_PUBLIC_META_PIXEL_ID` | Real Pixel ID (browser-side) |
+| `META_PIXEL_ID` | Same Pixel/Dataset ID (server-side CAPI) |
+| `META_CAPI_TOKEN` | Conversions API access token |
 | `NEXT_PUBLIC_BASE_URL` | `https://www.quickfixwindshields.co` |
 | `ZEPTOMAIL_TOKEN` | ZeptoMail API token |
 | `ADMIN_EMAIL` | Comma-separated admin emails |
@@ -299,7 +306,9 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 | `DATABASE_URL` | Yes | Neon Postgres connection string |
 | `UPSTASH_REDIS_REST_URL` | No | Rate limiting (fails open if missing) |
 | `UPSTASH_REDIS_REST_TOKEN` | No | Rate limiting (fails open if missing) |
-| `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID — use `PLACEHOLDER_PIXEL_ID` until ready |
+| `NEXT_PUBLIC_META_PIXEL_ID` | No | Meta Pixel ID for browser-side tracking — use `PLACEHOLDER_PIXEL_ID` until ready |
+| `META_PIXEL_ID` | No | Same Pixel/Dataset ID for server-side CAPI. If missing, CAPI events are skipped |
+| `META_CAPI_TOKEN` | No | Conversions API access token from Meta Events Manager. If missing, CAPI events are skipped |
 | `NEXT_PUBLIC_BASE_URL` | No | Used in Schema.org JSON-LD. Production: `https://www.quickfixwindshields.co` |
 | `NEXT_PUBLIC_BUSINESS_PHONE` | No | Shown in header, footer, confirmation page |
 | `NEXT_PUBLIC_BUSINESS_WHATSAPP` | No | WhatsApp deep link on confirmation page |
@@ -324,6 +333,9 @@ In Vercel → **Domains**, add your domain and follow DNS instructions.
 
 **Admin email not sending on Vercel**
 → Ensure `ZEPTOMAIL_TOKEN` and `ADMIN_EMAIL` are set in Vercel Environment Variables (Settings → Environment Variables). Email and Meta CAPI calls run inside `after()` from `next/server`, which keeps the serverless function alive after the response is sent. Without `after()`, fire-and-forget promises are killed when the function freezes. Check Vercel Functions logs for `[email]` prefixed messages to diagnose.
+
+**Meta CAPI events not appearing in Events Manager**
+→ Ensure both `META_PIXEL_ID` and `META_CAPI_TOKEN` are set in Vercel Environment Variables. Check Vercel Functions logs for `[CAPI]` prefixed messages. The CAPI call runs inside `after()` — if the function crashes before `after()` executes, the event won't fire. Use Meta's Test Events tool in Events Manager to verify payloads.
 
 **Rate limit blocking quote requests in dev**
 → Upstash Redis isn't configured (or is shared with prod). Either add a separate dev Upstash DB in `.env.local`, or temporarily remove `UPSTASH_REDIS_REST_URL` — rate limiting fails open and all requests pass through.

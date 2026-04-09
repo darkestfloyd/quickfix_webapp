@@ -1,7 +1,7 @@
 # QuickFix Windshields — Doorstep Windshield Service Website
 
 ## Project Overview
-Lead generation website for a premium doorstep windshield repair and replacement service. Customers submit a quote request in 3 steps (vehicle → contact → confirmation); a coordinator calls within 2 hours to confirm and schedule.
+Lead generation website for a premium doorstep windshield repair and replacement service. Customers submit a quote request in 3 steps (vehicle → contact → confirmation); a coordinator calls within 24 hours to confirm and schedule.
 
 ## Business Details
 - **Business name**: QuickFix Windshields
@@ -20,7 +20,7 @@ Lead generation website for a premium doorstep windshield repair and replacement
 - **Forms**: React Hook Form + Zod
 - **Database**: Neon Postgres via Drizzle ORM
 - **Rate limiting**: Upstash Redis (`@upstash/ratelimit`)
-- **Analytics**: Meta Pixel (client) + server-side event log
+- **Analytics**: Meta Pixel (browser) + Conversions API (server), redundant setup with event_id deduplication
 - **Email**: ZeptoMail transactional email (admin notifications on new leads)
 - **Package Manager**: **pnpm** (not npm)
 - **Deploy**: Vercel, region `bom1` (Mumbai)
@@ -38,17 +38,18 @@ quickfix/
 │   └── api/
 │       ├── quote/          # GET vehicle list | POST price lookup (rate-limited)
 │       ├── availability/   # GET open slots by PIN code (560* fallback)
-│       ├── leads/          # POST lead submission + attribution + admin email notification
+│       ├── leads/          # POST lead submission + CAPI event + admin email notification
 │       └── track/          # POST funnel event logging
 ├── components/
 │   ├── ui/                 # shadcn/ui primitives
 │   ├── layout/             # Header, Footer
 │   ├── sections/           # Landing page sections
-│   └── booking/            # BookingStore (context), BookingForm, step components
+│   ├── booking/            # BookingStore (context), BookingForm, step components
+│   └── MetaPixel.tsx       # Meta Pixel SDK loader (sets _fbp/_fbc cookies automatically)
 ├── lib/
 │   ├── utils.ts            # cn(), formatINR(), generateSessionId()
-│   ├── attribution.ts      # UTM/fbclid capture → sessionStorage
-│   ├── meta-events.ts      # fbq() wrappers
+│   ├── attribution.ts      # UTM/fbclid capture → sessionStorage (for DB records)
+│   ├── meta-events.ts      # fbq() wrappers: trackPageView, trackCTAClick, trackStepComplete, trackLeadSubmit
 │   ├── email.ts            # ZeptoMail client — admin notification on new leads
 │   ├── rate-limit.ts       # Upstash sliding-window rate limiter (fail-open)
 │   └── db/                 # Drizzle client, schema, migrate, seed, car_list_india.csv
@@ -89,3 +90,11 @@ pnpm db:seed      # Seed vehicles from car_list_india.csv, PIN codes, availabili
 - **Mobile-first** responsive design; desktop gets split layouts (form + summary side-by-side)
 - **CTAs**: Black uppercase buttons with letter-spacing (e.g. "GET FREE QUOTE →")
 - Headings follow the pattern: main word + *italic emphasis word* (e.g. "Effortless *Restoration*")
+
+## Meta Pixel + CAPI Architecture
+The site uses a redundant browser + server event setup for ad optimization:
+- **Browser**: Meta Pixel SDK fires `PageView`, `CTAClick` (custom), `BookingStepComplete` (custom), and `Lead` (standard with `eventID`)
+- **Server**: `/api/leads` fires a CAPI `Lead` event (Graph API v25.0) inside `after()` with matching `event_id` for deduplication
+- **CAPI user_data**: hashed phone (`ph`) and email (`em`), plus `_fbc` and `_fbp` cookies read from request headers, `client_ip_address`, and `client_user_agent` (both unhashed per Meta spec)
+- **Cookie handling**: Meta Pixel SDK sets `_fbc` and `_fbp` cookies automatically. The server reads these directly from the request — never manually constructs them from `fbclid`
+- **Ad-blocked users**: CAPI still fires with hashed phone + IP + UA, providing fallback attribution signal

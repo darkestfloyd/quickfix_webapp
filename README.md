@@ -1,4 +1,4 @@
-# QuickFix Windshields 
+# QuickFix Windshields
 
 Premium doorstep windshield repair and replacement service in Bengaluru. Customers book online in under 60 seconds; a certified technician arrives at their home or office.
 
@@ -19,7 +19,7 @@ Premium doorstep windshield repair and replacement service in Bengaluru. Custome
 | `/terms` | Terms of Service |
 | `/api/quote` | Returns INR price for a given vehicle (rate-limited) |
 | `/api/availability` | Returns open 2-hr slots for a PIN code (560* Bengaluru coverage) |
-| `/api/leads` | Persists a completed booking + attribution data |
+| `/api/leads` | Persists a completed booking + attribution + fires Meta CAPI event |
 | `/api/track` | Server-side funnel event logging |
 
 ---
@@ -36,9 +36,55 @@ Premium doorstep windshield repair and replacement service in Bengaluru. Custome
 | Forms | React Hook Form + Zod |
 | Database | Neon (Postgres, serverless) via Drizzle ORM |
 | Rate limiting | Upstash Redis (`@upstash/ratelimit`) |
-| Analytics | Meta Pixel + server-side event log |
+| Analytics | Meta Pixel (browser) + Conversions API (server) |
+| Email | ZeptoMail (admin notifications on new leads) |
 | Deploy | Vercel (region: `bom1` — Mumbai) |
 | Package manager | pnpm |
+
+---
+
+## Meta Pixel + Conversions API (Ad Optimization)
+
+The site runs a **redundant Pixel + CAPI setup** so Meta receives conversion signals from both browser and server. This is the recommended architecture for maximising Event Match Quality and ad optimization.
+
+### How it works
+
+1. **Meta Pixel** (`components/MetaPixel.tsx`) loads on every page via `app/layout.tsx`. The SDK automatically sets `_fbp` (browser ID) and `_fbc` (click ID, when user arrives from an ad) as first-party cookies.
+
+2. **Browser events** (`lib/meta-events.ts`) fire via `fbq()`:
+   - `PageView` — on every page load
+   - `CTAClick` (custom) — when the hero CTA is clicked
+   - `BookingStepComplete` (custom) — after each funnel step
+   - `Lead` (standard) — on successful booking submission, with `eventID` for deduplication
+
+3. **Server event** (`app/api/leads/route.ts`) fires a CAPI `Lead` event inside `after()` (keeps the Vercel serverless function alive after response). The CAPI payload includes:
+   - `event_id` — matches the browser `eventID` for deduplication
+   - `user_data.ph` — SHA-256 hashed phone
+   - `user_data.em` — SHA-256 hashed email (when provided)
+   - `user_data.fbc` — read from `_fbc` cookie (set by Meta Pixel SDK)
+   - `user_data.fbp` — read from `_fbp` cookie (set by Meta Pixel SDK)
+   - `user_data.client_ip_address` — from `x-forwarded-for` header (unhashed)
+   - `user_data.client_user_agent` — from `user-agent` header (unhashed)
+
+### Event deduplication
+
+Browser and server both send a `Lead` event with the same `event_id` and `event_name`. Meta deduplicates within a 48-hour window — the conversion is counted once, but Meta merges matching parameters from both sources for richer signal.
+
+### Why CAPI matters for ad-blocked users
+
+When an ad blocker prevents the Meta Pixel from loading (~30-40% of traffic), no browser events fire and no `_fbp`/`_fbc` cookies are set. The CAPI event still fires with hashed phone, IP address, and user agent — giving Meta enough signal to attribute the conversion back to the ad click. Without CAPI, these conversions would be invisible to Meta's algorithm.
+
+### Attribution flow
+
+UTM parameters and `fbclid` are captured on first page load (`lib/attribution.ts`) → stored in `sessionStorage` → written to the `lead_requests` DB row at submission. The `fbclid` in the DB is for internal analytics; the CAPI integration reads `_fbc`/`_fbp` cookies directly from the request (Meta's recommended approach) rather than reconstructing them from the raw `fbclid`.
+
+### Environment variables for Meta
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NEXT_PUBLIC_META_PIXEL_ID` | Yes (for tracking) | Meta Pixel ID — used by browser-side `fbq()` |
+| `META_PIXEL_ID` | Yes (for CAPI) | Same Pixel/Dataset ID — used server-side for CAPI endpoint |
+| `META_CAPI_TOKEN` | Yes (for CAPI) | Conversions API access token from Meta Events Manager |
 
 ---
 
@@ -56,13 +102,13 @@ quickfix/
 │   ├── layout.tsx              # Root layout: fonts, Schema.org JSON-LD, MetaPixel
 │   ├── page.tsx                # Landing page (composes section components)
 │   ├── globals.css             # Tailwind base + CSS custom properties (azure_concierge theme)
-│   ├── booking/page.tsx        # 4-step booking funnel
+│   ├── booking/page.tsx        # 3-step booking funnel
 │   ├── privacy/page.tsx        # Privacy Policy
 │   ├── terms/page.tsx          # Terms of Service
 │   └── api/
 │       ├── quote/route.ts      # GET vehicle list | POST price lookup
 │       ├── availability/route.ts  # GET open slots by PIN (560* fallback)
-│       ├── leads/route.ts      # POST lead submission
+│       ├── leads/route.ts      # POST lead submission + CAPI event + admin email
 │       └── track/route.ts      # POST funnel event
 │
 ├── components/
@@ -84,12 +130,13 @@ quickfix/
 │   │       ├── VehicleStep.tsx      # 5 brand tiles + inline "Other" make dropdown + model/year/glass
 │   │       ├── ContactStep.tsx      # Form + booking summary card (desktop)
 │   │       └── ConfirmationStep.tsx # Auto-submit, dark arrival card, payment info
-│   └── MetaPixel.tsx
+│   └── MetaPixel.tsx           # Pixel SDK loader + PageView trigger
 │
 ├── lib/
 │   ├── utils.ts            # cn(), formatINR(), generateSessionId()
 │   ├── attribution.ts      # UTM / fbclid capture → sessionStorage
-│   ├── meta-events.ts      # fbq() wrappers (trackQuoteView, trackLeadSubmit…)
+│   ├── meta-events.ts      # fbq() wrappers (trackCTAClick, trackLeadSubmit, trackStepComplete)
+│   ├── email.ts            # ZeptoMail client — admin notification on new leads
 │   ├── rate-limit.ts       # Upstash sliding-window rate limiter (fail-open)
 │   └── db/
 │       ├── index.ts        # Drizzle + Neon HTTP client
@@ -110,7 +157,7 @@ quickfix/
 
 **azure_concierge theme** — black/white/teal palette, Playfair Display serif headings with italic emphasis pattern (`"Effortless` *`Restoration`*`"`). No navy or amber. CTAs are black uppercase with letter-spacing.
 
-**3-step quote request flow** — vehicle → contact → confirmation. State lives in React Context + sessionStorage, not URL params. Preserves state on accidental refresh without full page reloads between steps. A coordinator calls within 2 hours to confirm; no scheduling step in-app.
+**3-step quote request flow** — vehicle → contact → confirmation. State lives in React Context + sessionStorage, not URL params. Preserves state on accidental refresh without full page reloads between steps. A coordinator calls within 24 hours to confirm; no scheduling step in-app.
 
 **229-vehicle catalog** — loaded from `lib/db/car_list_india.csv` (Make, Model, Category). Year is UI-only (static 2015–2024 dropdown); the DB stores make/model/category and assigns base prices by category tier. Vehicle picker shows 5 grid brand tiles (Maruti Suzuki, Hyundai, BMW, Honda, Toyota) with an inline "Other" dropdown for all remaining DB makes, plus a freeform fallback for anything not listed.
 
@@ -120,7 +167,7 @@ quickfix/
 
 **Fail-open rate limiting** — if Upstash is unavailable, the quote API still responds. Prevents Redis outages from blocking sales.
 
-**Attribution at lead level** — UTM params and `fbclid` are captured on first page load and stored in sessionStorage, then written to every lead record. Connects Meta ad spend to actual bookings.
+**Redundant Pixel + CAPI** — every Lead event fires from both browser (pixel) and server (CAPI) with matching `event_id` for deduplication. CAPI reads `_fbc`/`_fbp` cookies from the request plus IP and user agent. This maximises Event Match Quality and ensures conversions are attributed even when ad blockers prevent the pixel from loading.
 
 ---
 

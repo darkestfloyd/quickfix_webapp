@@ -18,14 +18,6 @@ export function trackCTAClick() {
   fbq("track", "InitiateCheckout", { content_name: "CTA Click - Get Free Quote" });
 }
 
-export function trackQuoteView(quoteAmount: number) {
-  fbq("track", "ViewContent", {
-    content_name: "Quote View",
-    currency: "INR",
-    value: quoteAmount,
-  });
-}
-
 export function trackStepComplete(step: number, stepName: string) {
   fbq("trackCustom", "BookingStepComplete", { step, stepName });
 }
